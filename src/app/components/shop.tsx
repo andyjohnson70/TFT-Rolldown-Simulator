@@ -19,7 +19,7 @@ function ChampionCard() {
 
 export function Shop() {
     return(
-        <div className="shop flex justify-between bg-slate-800 h-full">
+        <div className="shop flex justify-between h-full">
             <ChampionCard />
             <ChampionCard />
             <ChampionCard />

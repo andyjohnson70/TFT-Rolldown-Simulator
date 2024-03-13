@@ -1,4 +1,4 @@
-export default function Bench {
+export default function Bench() {
     return (
         <div>
             
