@@ -1,5 +1,5 @@
-import { RerollButton, XpButton } from "./components/buttons/index";
-import { Shop } from "./components/shop/index";
+import { RerollButton, XpButton } from "./components/buttons";
+import { Shop } from "./components/shop";
 
 export default function Home() {
   return (
