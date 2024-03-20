@@ -1,8 +1,11 @@
 import { prototype } from "events";
 import { Champion } from "../lib/definitions";
+import { useContext } from "react";
+import { GameContext } from "../context/context";
 
 interface ChampionProps {
-    champion?: Champion
+    champion?: Champion,
+    shopIndex: number
 }
 
 interface TraitItemProps {
@@ -10,10 +13,10 @@ interface TraitItemProps {
 }
 
 export function ChampionCard(props: ChampionProps) {
+    const gameContext = useContext(GameContext);
     const purchaseChampion = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
     }
-
 
     return (
         undefined != props.champion ?
@@ -29,11 +32,9 @@ export function ChampionCard(props: ChampionProps) {
                         })}
                     </ul>
                     <ul className="class-list">
-                        <li>
-                            {props.champion.classes.map((trait, id) => {
-                                return <TraitItem name={trait} key={`class_trait_${id}`}/>
-                            })}
-                        </li>
+                        {props.champion.classes.map((trait, id) => {
+                            return <TraitItem name={trait} key={`class_trait_${id}`}/>
+                        })}
                     </ul>
                 </div>
             </div>
@@ -51,11 +52,11 @@ export function ChampionCard(props: ChampionProps) {
     );
 }
 
-function TraitItem( props: TraitItemProps) {
+function TraitItem(props: TraitItemProps) {
     return(
-    <li className="text-white">
-        {props.name}
-    </li>
+        <li className="text-white">
+            {props.name}
+        </li>
     ) 
 }
 
