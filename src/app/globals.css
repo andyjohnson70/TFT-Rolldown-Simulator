@@ -22,6 +22,37 @@ body {
   background-repeat: no-repeat;
 }
 
+.hex:before {
+  content: " ";
+  width: 0; height: 30px;
+  border-bottom: 30px solid #171717;
+  border-left: 52px solid transparent;
+  border-right: 52px solid transparent;
+  position: absolute;
+  top: -30px;
+}
+
+.hex {
+  margin-top: 30px;
+  width: 104px;
+  height: 60px;
+  background-color: #171717;
+  position: relative;
+  background-size: cover;
+  opacity: .9;
+}
+
+.hex:after {
+  content: "";
+  width: 0;
+  height: 30px;
+  position: absolute;
+  bottom: -30px;
+  border-top: 30px solid #171717;
+  border-left: 52px solid transparent;
+  border-right: 52px solid transparent;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

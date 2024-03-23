@@ -1,21 +1,32 @@
-import { prototype } from "events";
-import { Champion } from "../lib/definitions";
+import { Champion, GameContextType } from "../lib/definitions";
 import { useContext } from "react";
 import { GameContext } from "../context/context";
+import { PurchaseChampion } from "../scripts/actions";
 
-interface ChampionProps {
+export interface ChampionCardProps {
     champion?: Champion,
     shopIndex: number
+}
+
+interface ChampionHexProps {
+    champion: Champion
 }
 
 interface TraitItemProps {
     name: string
 }
 
-export function ChampionCard(props: ChampionProps) {
+export function ChampionCard(props: ChampionCardProps) {
     const gameContext = useContext(GameContext);
     const purchaseChampion = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
+        //If bench has no space, then you cannot purchase a champion
+        if(!gameContext.benchBag.some((slot) => slot === undefined)) {
+            return;
+        }
+        const {newBenchBag, newShopBag} = PurchaseChampion(gameContext, props);
+        gameContext.setBenchBag(newBenchBag);
+        gameContext.setShopBag(newShopBag);
     }
 
     return (
@@ -60,9 +71,11 @@ function TraitItem(props: TraitItemProps) {
     ) 
 }
 
-export function ChampionHex(props: ChampionProps) {
+export function ChampionHex(props: ChampionHexProps) {
     return (
-        <div>
+        <div className="hex bg-center relative bg-no-repeat bg-cover" style={{
+            backgroundImage: `url(${props.champion.imageurl})`,
+        }}>
 
         </div>
     );

@@ -1,6 +1,6 @@
-import { useCallback, useContext } from "react";
+import { useContext } from "react";
 import { GameContext } from "../context/context";
-import { FetchShopBag } from "./shop";
+import { FetchShopBag } from "../scripts/actions";
 
 export function XpButton() {
     return (
