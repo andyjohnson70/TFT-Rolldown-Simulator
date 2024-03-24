@@ -17,19 +17,39 @@ export function InitializeChampionBag(championsList?: Champion[]) : ChampionBag 
     championsList?.forEach((champion) => {
         switch(champion.tier) {
             case 1:
-                championBag.Tier1Units.push(...Array(BagSize.Tier1).fill(champion));
+                for(let i = 0; i < BagSize.Tier1; i++) {
+                    let tempChamp : Champion = {...champion};
+                    tempChamp.id = tempChamp.id + `-${i}`
+                    championBag.Tier1Units.push(tempChamp)
+                }
                 break;
             case 2: 
-                championBag.Tier2Units.push(...Array(BagSize.Tier2).fill(champion));
+            for(let i = 0; i < BagSize.Tier2; i++) {
+                let tempChamp : Champion = {...champion};
+                tempChamp.id = tempChamp.id + `-${i}`
+                championBag.Tier2Units.push(tempChamp)
+            }
                 break;
             case 3:
-                championBag.Tier3Units.push(...Array(BagSize.Tier3).fill(champion));
+                for(let i = 0; i < BagSize.Tier3; i++) {
+                    let tempChamp : Champion = {...champion};
+                    tempChamp.id = tempChamp.id + `-${i}`
+                    championBag.Tier3Units.push(tempChamp)
+                }
                 break;
             case 4:
-                championBag.Tier4Units.push(...Array(BagSize.Tier4).fill(champion));
+                for(let i = 0; i < BagSize.Tier4; i++) {
+                    let tempChamp : Champion = {...champion};
+                    tempChamp.id = champion.id + `-${i}`
+                    championBag.Tier4Units.push(tempChamp)
+                }
                 break;
             case 5:
-                championBag.Tier5Units.push(...Array(BagSize.Tier5).fill(champion));
+                for(let i = 0; i < BagSize.Tier5; i++) {
+                    let tempChamp : Champion = {...champion};
+                    tempChamp.id = tempChamp.id + `-${i}`
+                    championBag.Tier5Units.push(tempChamp)
+                }
                 break;
         }
     });

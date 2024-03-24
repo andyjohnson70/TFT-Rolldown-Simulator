@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { CSSProperties, useContext } from "react";
 import { Champion } from "../lib/definitions";
 import { GameContext } from "../context/context";
 import { ChampionHex } from "./champion";
@@ -22,11 +22,15 @@ export default function Bench() {
 
 function BenchSlot(props: BenchSlotProps) {
     const {isOver, setNodeRef} = useDroppable({
-        id: 'dropable'
+        id: `bench-slot-${props.index}`
     });
 
+    const style : CSSProperties = {
+
+    };
+
     return (
-        <div className={
+        <div style={style} className={
             8 === props.index ?
             'flex justify-around border-l-4 border-r-4 border-l-cyan-600 border-r-cyan-600 h-full w-full' :
             'flex justify-around border-l-4 border-l-cyan-600 h-full w-full'

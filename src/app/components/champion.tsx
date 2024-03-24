@@ -1,7 +1,9 @@
 import { Champion, GameContextType } from "../lib/definitions";
-import { useContext } from "react";
+import { CSSProperties, useContext } from "react";
 import { GameContext } from "../context/context";
 import { PurchaseChampion } from "../scripts/actions";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities"
 
 export interface ChampionCardProps {
     champion?: Champion,
@@ -72,10 +74,22 @@ function TraitItem(props: TraitItemProps) {
 }
 
 export function ChampionHex(props: ChampionHexProps) {
+    const {isDragging, attributes, listeners, setNodeRef, transform, over} = useDraggable({
+        id: `${props.champion.id}`,
+        data: {
+            tier: props.champion.tier
+        }
+    });
+
+    const style : CSSProperties = {
+        backgroundImage: `url(${props.champion.imageurl})`,
+        transform: CSS.Translate.toString(transform),
+        zIndex: isDragging ? 1 : undefined,
+    };
+
     return (
-        <div className="hex bg-center relative bg-no-repeat bg-cover" style={{
-            backgroundImage: `url(${props.champion.imageurl})`,
-        }}>
+        <div ref={setNodeRef} {...listeners} {...attributes}
+        className="hex bg-center relative bg-no-repeat bg-cover" style={style}>
 
         </div>
     );

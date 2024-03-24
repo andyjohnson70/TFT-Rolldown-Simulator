@@ -45,7 +45,7 @@ function HexRow(props : HexRowProps) {
 
 function Hex(props : HexProps) {
     const {isOver, setNodeRef} = useDroppable({
-        id: 'dropable'
+        id: `${props.id}`
     });
 
     const style : CSSProperties = {
