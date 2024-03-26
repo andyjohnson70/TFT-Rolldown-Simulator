@@ -1,9 +1,11 @@
 import { useDroppable } from "@dnd-kit/core";
 import { Champion } from "../lib/definitions";
 import { ChampionHex } from "./champion";
-import { CSSProperties } from "react";
+import { CSSProperties, useContext } from "react";
+import { GameContext } from "../context/context";
 
 interface HexRowProps {
+    boardHexes: (Champion|undefined)[],
     id: string,
     direction: string
 }
@@ -14,12 +16,12 @@ interface HexProps {
 }
 
 export default function Board() {
+    const gameContext = useContext(GameContext);
     return (
         <div className="flex flex-col gap-y-2">
-            <HexRow id="A" direction="left" />
-            <HexRow id="B" direction="right" />
-            <HexRow id="C" direction="left" />
-            <HexRow id="D" direction="right" />
+            {gameContext.boardBag.map((boardRow, id) => {
+                return <HexRow boardHexes={boardRow} id={id.toString()} direction={0 === id % 2 ? 'left' : 'right'} key={`hex_row_${id}`} />
+            })}
         </div>
     );
 }
@@ -32,13 +34,9 @@ function HexRow(props : HexRowProps) {
             "flex grid-rows-7 gap-2 translate-x-14" :
             "flex grid-rows-7 gap-2"
         }>
-            <Hex id={`${props.id}-1`} champion={undefined} />
-            <Hex id={`${props.id}-2`} champion={undefined} />
-            <Hex id={`${props.id}-3`} champion={undefined} />
-            <Hex id={`${props.id}-4`} champion={undefined} />
-            <Hex id={`${props.id}-5`} champion={undefined} />
-            <Hex id={`${props.id}-6`} champion={undefined} />
-            <Hex id={`${props.id}-7`} champion={undefined} />
+            {props.boardHexes.map((hex, id) => {
+                return <Hex id={`${props.id}-${id}`} champion={hex} key={`hex_${props.id}-${id}`} />
+            })}
         </div>
     );
 }
@@ -54,8 +52,8 @@ function Hex(props : HexProps) {
     }
     
     return (
-        <div id={props.id}>
-            {undefined !== props.champion ?<ChampionHex champion={props.champion}/> : <div  style={style} className="hex"></div> }
+        <div ref={setNodeRef} id={props.id}>
+            {undefined !== props.champion ?<ChampionHex currentPosition={props.id} champion={props.champion}/> : <div  style={style} className="hex"></div> }
         </div>
     )
 }

@@ -1,3 +1,5 @@
+import React from "react"
+
 export type Champion = {
     id: string,
     name: string,
@@ -14,6 +16,8 @@ export type GameContextType = {
     setShopBag: React.Dispatch<React.SetStateAction<(Champion|undefined)[]>>,
     benchBag: (Champion|undefined)[],
     setBenchBag: React.Dispatch<React.SetStateAction<(Champion|undefined)[]>>,
+    boardBag: (Champion|undefined)[][],
+    setBoardBag: React.Dispatch<React.SetStateAction<(Champion|undefined)[][]>>,
     level: number,
     setLevel: React.Dispatch<React.SetStateAction<number>>,
     totalXP: number,

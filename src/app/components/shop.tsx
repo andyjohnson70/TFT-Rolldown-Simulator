@@ -18,7 +18,7 @@ export function Shop() {
     return(
         <div className="shop flex justify-between h-full">
             {active ?
-            <div style={style} className="text-4xl text-white text-center content-evenly w-full">Sell for {active.data.current?.tier}g</div>:
+            <div style={style} ref={setNodeRef} className="text-4xl text-white text-center content-evenly w-full">Sell for {active.data.current?.tier}g</div>:
             gameContext.shopBag.map((champion, id) => {
                 return <ChampionCard champion={champion} shopIndex={id} key={`shop_champion_${id}`} />
             })}

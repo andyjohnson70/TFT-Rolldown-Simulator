@@ -17,6 +17,8 @@ export const GameContext = createContext<GameContextType>({
     setShopBag: () => {},
     benchBag: [],
     setBenchBag: () => {},
+    boardBag: [],
+    setBoardBag: () => {},
     totalXP: 0,
     setTotalXP: () => {},
     gold: 50,

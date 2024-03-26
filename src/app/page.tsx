@@ -1,5 +1,5 @@
 "use client";
-import { InitializeChampionBag } from "./scripts/actions";
+import { InitializeChampionBag, MoveChampion, SellChampion } from "./scripts/actions";
 import { RerollButton, XpButton } from "./components/buttons";
 import { Shop } from "./components/shop";
 import { GameContext } from "./context/context";
@@ -8,7 +8,7 @@ import useSWRImmutable from "swr/immutable";
 import Board from "./components/board";
 import Bench from "./components/bench";
 import { useState } from "react";
-import { DndContext } from "@dnd-kit/core";
+import { Active, DndContext, DragEndEvent, Over } from "@dnd-kit/core";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -19,6 +19,7 @@ export default function Home() {
   const [level, setLevel] = useState<number>(7);
   const [shopBag, setShopBag] = useState<(Champion|undefined)[]>(Array(5).fill(undefined));
   const [benchBag, setBenchBag] = useState<(Champion|undefined)[]>(Array(9).fill(undefined));
+  const [boardBag, setBoardBag] = useState<(Champion|undefined)[][]>(Array(4).fill(Array(7).fill(undefined)));
   const [totalXP, setTotalXP] = useState<number>(74);
   const [gold, setGold] = useState<number>(50); 
   const [gameActive, setGameActive] = useState<boolean>(false);
@@ -32,18 +33,35 @@ export default function Home() {
     const initialChampionBag = InitializeChampionBag(data);
     setChampionBag(initialChampionBag);
   }
-  
 
-  // const { newChampionBag, newShopBag } = FetchShopBag();
-  // setChampionBag(newChampionBag);
-  // setShopBag(newShopBag);
- 
+  function handleDragEnd(event: DragEndEvent) {
+    const {active, over} = event;
+
+    if(over && over.id === 'shop') {
+      const { newBoardBag, newBenchBag, newChampionBag, newGold } = SellChampion(boardBag, benchBag, championBag, gold, active, over);
+      //If bench bags are not equal to each other the unit sold was from the bench
+      if(JSON.stringify(newBenchBag) !== JSON.stringify(benchBag)) {
+        setBenchBag(newBenchBag);
+      } else {
+        setBoardBag(newBoardBag);
+      }
+      setChampionBag(newChampionBag);
+      setGold(newGold);
+    } 
+    else if (over && over.id) {
+      const { newBoardBag, newBenchBag } = MoveChampion(boardBag, benchBag, active, over);
+      setBoardBag(newBoardBag);
+      setBenchBag(newBenchBag);
+    }
+  }
+  
   return (
     <GameContext.Provider value={{
       championBag, setChampionBag,
       level, setLevel,
       shopBag, setShopBag,
       benchBag, setBenchBag,
+      boardBag, setBoardBag,
       totalXP, setTotalXP,
       gold, setGold,
       gameActive, setGameActive,
@@ -53,7 +71,7 @@ export default function Home() {
       sellKeybind, setSellKeybind,
       arenaUrl, setArenaUrl
     }}>
-      <DndContext>
+      <DndContext onDragEnd={handleDragEnd}>
         <main className="flex min-h-screen flex-col items-center justify-between">
           <div className="upper-section flex flex-col relative items-center h-screen w-full">
             <div className="options">

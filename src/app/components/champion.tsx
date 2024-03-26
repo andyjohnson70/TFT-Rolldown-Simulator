@@ -11,7 +11,8 @@ export interface ChampionCardProps {
 }
 
 interface ChampionHexProps {
-    champion: Champion
+    champion: Champion,
+    currentPosition: string
 }
 
 interface TraitItemProps {
@@ -26,9 +27,10 @@ export function ChampionCard(props: ChampionCardProps) {
         if(!gameContext.benchBag.some((slot) => slot === undefined)) {
             return;
         }
-        const {newBenchBag, newShopBag} = PurchaseChampion(gameContext, props);
+        const {newBenchBag, newShopBag, newGold} = PurchaseChampion(gameContext, props);
         gameContext.setBenchBag(newBenchBag);
         gameContext.setShopBag(newShopBag);
+        gameContext.setGold(newGold);
     }
 
     return (
@@ -77,7 +79,8 @@ export function ChampionHex(props: ChampionHexProps) {
     const {isDragging, attributes, listeners, setNodeRef, transform, over} = useDraggable({
         id: `${props.champion.id}`,
         data: {
-            tier: props.champion.tier
+            tier: props.champion.tier,
+            currentPosition: props.currentPosition
         }
     });
 
