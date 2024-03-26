@@ -322,11 +322,6 @@ export function FetchShopBag(gameContext : GameContextType) : { newChampionBag :
         }
     }
 
-    console.log("FetchShop return value:", { 
-        newChampionBag : gameContext.championBag, 
-        newShopBag: newShop
-    });
-
     return { 
         newChampionBag : gameContext.championBag, 
         newShopBag: newShop

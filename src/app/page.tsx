@@ -19,7 +19,7 @@ export default function Home() {
   const [level, setLevel] = useState<number>(7);
   const [shopBag, setShopBag] = useState<(Champion|undefined)[]>(Array(5).fill(undefined));
   const [benchBag, setBenchBag] = useState<(Champion|undefined)[]>(Array(9).fill(undefined));
-  const [boardBag, setBoardBag] = useState<(Champion|undefined)[][]>(Array(4).fill(Array(7).fill(undefined)));
+  const [boardBag, setBoardBag] = useState<(Champion|undefined)[][]>(Array.from(Array(4), () => new Array(7).fill(undefined)));
   const [totalXP, setTotalXP] = useState<number>(74);
   const [gold, setGold] = useState<number>(50); 
   const [gameActive, setGameActive] = useState<boolean>(false);
