@@ -1,10 +1,8 @@
 import { Active, Over } from "@dnd-kit/core";
 import { ChampionCardProps } from "../components/champion";
-import { BagSize, Champion, ChampionBag, GameContextType, SHOP_ODDS } from "../lib/definitions";
-import { act } from "react-dom/test-utils";
-import { Goblin_One } from "next/font/google";
+import { BagSize, Champion, ChampionBag, ChampionDataModel, GameContextType, SHOP_ODDS } from "../lib/definitions";
 
-export function InitializeChampionBag(championsList?: Champion[]) : ChampionBag {
+export function InitializeChampionBag(championsList?: ChampionDataModel[]) : ChampionBag {
     let championBag: ChampionBag = {
         Tier1Units: [],
         Tier2Units: [],
@@ -21,36 +19,71 @@ export function InitializeChampionBag(championsList?: Champion[]) : ChampionBag 
         switch(champion.tier) {
             case 1:
                 for(let i = 0; i < BagSize.Tier1; i++) {
-                    let tempChamp : Champion = {...champion};
-                    tempChamp.id = tempChamp.id + `-${i}`
+                    let tempChamp : Champion = {
+                        id: champion.id + `-${i}`,
+                        name: champion.name,
+                        tier: champion.tier,
+                        imageurl: champion.imageurl,
+                        origins: champion.origins,
+                        classes: champion.classes,
+                        starlevel: 1
+                    };
                     championBag.Tier1Units.push(tempChamp)
                 }
                 break;
             case 2: 
             for(let i = 0; i < BagSize.Tier2; i++) {
-                let tempChamp : Champion = {...champion};
-                tempChamp.id = tempChamp.id + `-${i}`
+                let tempChamp : Champion = {
+                    id: champion.id + `-${i}`,
+                    name: champion.name,
+                    tier: champion.tier,
+                    imageurl: champion.imageurl,
+                    origins: champion.origins,
+                    classes: champion.classes,
+                    starlevel: 1
+                };
                 championBag.Tier2Units.push(tempChamp)
             }
                 break;
             case 3:
                 for(let i = 0; i < BagSize.Tier3; i++) {
-                    let tempChamp : Champion = {...champion};
-                    tempChamp.id = tempChamp.id + `-${i}`
+                    let tempChamp : Champion = {
+                        id: champion.id + `-${i}`,
+                        name: champion.name,
+                        tier: champion.tier,
+                        imageurl: champion.imageurl,
+                        origins: champion.origins,
+                        classes: champion.classes,
+                        starlevel: 1
+                    };
                     championBag.Tier3Units.push(tempChamp)
                 }
                 break;
             case 4:
                 for(let i = 0; i < BagSize.Tier4; i++) {
-                    let tempChamp : Champion = {...champion};
-                    tempChamp.id = champion.id + `-${i}`
+                    let tempChamp : Champion = {
+                        id: champion.id + `-${i}`,
+                        name: champion.name,
+                        tier: champion.tier,
+                        imageurl: champion.imageurl,
+                        origins: champion.origins,
+                        classes: champion.classes,
+                        starlevel: 1
+                    };
                     championBag.Tier4Units.push(tempChamp)
                 }
                 break;
             case 5:
                 for(let i = 0; i < BagSize.Tier5; i++) {
-                    let tempChamp : Champion = {...champion};
-                    tempChamp.id = tempChamp.id + `-${i}`
+                    let tempChamp : Champion = {
+                        id: champion.id + `-${i}`,
+                        name: champion.name,
+                        tier: champion.tier,
+                        imageurl: champion.imageurl,
+                        origins: champion.origins,
+                        classes: champion.classes,
+                        starlevel: 1
+                    };
                     championBag.Tier5Units.push(tempChamp)
                 }
                 break;
@@ -60,32 +93,142 @@ export function InitializeChampionBag(championsList?: Champion[]) : ChampionBag 
     return championBag;
 }
 
-export function PurchaseChampion(gameContext : GameContextType, championCardProps: ChampionCardProps) : { newBenchBag : (Champion | undefined)[], newShopBag : (Champion | undefined)[], newGold : number } {
+export function PurchaseChampion(gameContext : GameContextType, championCardProps: ChampionCardProps) : { newBoardBag : (Champion|undefined)[][], newBenchBag : (Champion | undefined)[], newShopBag : (Champion | undefined)[], newGold : number, levelUpChampion : boolean } {
     if(!championCardProps.champion) {
         return {
+            newBoardBag: gameContext.boardBag,
             newBenchBag: gameContext.benchBag,
             newShopBag: gameContext.shopBag,
-            newGold: gameContext.gold
+            newGold: gameContext.gold,
+            levelUpChampion: false
         }
     }
 
+    const championToPurchase : Champion = championCardProps.champion;
+    const shopIndex : number = championCardProps.shopIndex;
+
+    const newBoardBag: (Champion|undefined)[][] = [...gameContext.boardBag]
     const newBenchBag: (Champion|undefined)[] = [...gameContext.benchBag];
     const newShopBag: (Champion|undefined)[] = [...gameContext.shopBag];
 
-    for (let i = 0; i < gameContext.benchBag.length; i++) {
-        if(gameContext.benchBag[i] === undefined) {
-            newBenchBag[i] = championCardProps.champion;
-            break;
+    const flatBoardBag: (Champion|undefined)[] = gameContext.boardBag.flat();
+    const allPlayerChampions: (Champion|undefined)[] = [...flatBoardBag, ...newBenchBag] 
+
+    let levelUpChampion: boolean = false;
+
+    const levelTwoCheck: boolean = allPlayerChampions.filter(champion => 
+        champion &&
+        champion.name === championToPurchase.name &&
+        champion.starlevel === 1
+    ).length === 2;
+
+    if(levelTwoCheck) {
+        levelUpChampion = true;
+        let tempChamp : Champion|undefined = undefined;
+        newBoardBag.forEach((row, i) => {
+            row.forEach((champion, j) => {
+                if (champion && champion?.name === championToPurchase.name && !tempChamp) {
+                    tempChamp = {
+                        id: champion.id,
+                        name: champion.name,
+                        tier: champion.tier,
+                        imageurl: champion.imageurl,
+                        origins: champion.origins,
+                        classes: champion.classes,
+                        starlevel: 2
+                    };
+                    newBoardBag[i][j] = tempChamp;
+                } else if (champion && champion?.name === championToPurchase.name && tempChamp) {
+                    newBoardBag[i][j] = undefined;
+                }
+            })
+        });
+
+        newBenchBag.forEach((champion, i) => {
+            if (champion && champion?.name === championToPurchase.name && !tempChamp) {
+                tempChamp = {
+                    id: champion.id,
+                    name: champion.name,
+                    tier: champion.tier,
+                    imageurl: champion.imageurl,
+                    origins: champion.origins,
+                    classes: champion.classes,
+                    starlevel: 2
+                };
+                newBenchBag[i] = tempChamp;
+            } else if (champion && champion?.name === championToPurchase.name && tempChamp) {
+                newBenchBag[i] = undefined;
+            }
+        });
+    } 
+
+    // Check if creating a two star was enough to start a three star champion
+    if(levelTwoCheck) {
+        const levelThreeCheck: boolean = allPlayerChampions.filter(champion => 
+            champion &&
+            champion.name === championToPurchase.name &&
+            champion.starlevel === 2
+        ).length === 3;
+
+        if(levelThreeCheck) {
+            let tempChamp : Champion|undefined = undefined;
+            newBoardBag.forEach((row, i) => {
+                row.forEach((champion, j) => {
+                    if (champion && champion?.name === championToPurchase.name && !tempChamp) {
+                        tempChamp = {
+                            id: champion.id,
+                            name: champion.name,
+                            tier: champion.tier,
+                            imageurl: champion.imageurl,
+                            origins: champion.origins,
+                            classes: champion.classes,
+                            starlevel: 3
+                        };
+                        newBoardBag[i][j] = tempChamp;
+                    } else if (champion && champion?.name === championToPurchase.name && tempChamp) {
+                        newBoardBag[i][j] = undefined;
+                    }
+                })
+            });
+
+            newBenchBag.forEach((champion, i) => {
+                if (champion && champion?.name === championToPurchase.name && !tempChamp) {
+                    tempChamp = {
+                        id: champion.id,
+                        name: champion.name,
+                        tier: champion.tier,
+                        imageurl: champion.imageurl,
+                        origins: champion.origins,
+                        classes: champion.classes,
+                        starlevel: 3
+                    };
+                    newBenchBag[i] = tempChamp;
+                } else if (champion && champion?.name === championToPurchase.name && tempChamp) {
+                    newBenchBag[i] = undefined;
+                }
+            });
         }
     }
 
-    newShopBag[championCardProps.shopIndex] = undefined;
-    const newGold = gameContext.gold - championCardProps.champion?.tier;
+    // If a champion was leveled up then we do not need to add the purchased champion to the bench since it was used in the level up
+    if(!levelUpChampion) {
+        for (let i = 0; i < gameContext.benchBag.length; i++) {
+            if(gameContext.benchBag[i] === undefined) {
+                newBenchBag[i] = championToPurchase;
+                break;
+            }
+        }
+    }
+
+    newShopBag[shopIndex] = undefined;
+    const newGold = gameContext.gold - championToPurchase.tier;
 
     return {
+        newBoardBag: newBoardBag,
         newBenchBag: newBenchBag,
         newShopBag: newShopBag,
         newGold: newGold,
+        levelUpChampion: levelUpChampion
     }
 }
 
@@ -224,7 +367,6 @@ export function FetchShopBag(gameContext : GameContextType) : { newChampionBag :
     const currentShopTiers: number[] = [];
     const newShop: Champion[] = [];
     
-
     //Check if champion bag has been set
     if (undefined === gameContext.championBag) {
         return { 
@@ -285,7 +427,8 @@ export function FetchShopBag(gameContext : GameContextType) : { newChampionBag :
             tier: 0,
             imageurl: "",
             origins: [],
-            classes: []
+            classes: [],
+            starlevel: 1
         };
 
         switch(currentShopTiers[index]) {
@@ -326,4 +469,18 @@ export function FetchShopBag(gameContext : GameContextType) : { newChampionBag :
         newChampionBag : gameContext.championBag, 
         newShopBag: newShop
     };
+}
+
+
+export function ResetGameState(gameContext : GameContextType) {
+    gameContext.setBenchBag(Array(9).fill(undefined));
+    gameContext.setBoardBag(Array.from(Array(4), () => new Array(7).fill(undefined)));
+    gameContext.setShopBag(Array(5).fill(undefined));
+    gameContext.setLevel(7);
+    gameContext.setGold(50);
+    gameContext.setTime(50);
+    const newChampionBag = InitializeChampionBag(gameContext.initialChampionList);
+    gameContext.setChampionBag(newChampionBag);
+    gameContext.setGameActive(false);
+    return;
 }

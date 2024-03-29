@@ -1,6 +1,6 @@
 import React from "react"
 
-export type Champion = {
+export type ChampionDataModel = {
     id: string,
     name: string,
     tier: number,
@@ -9,7 +9,19 @@ export type Champion = {
     classes: string[]
 }
 
+export type Champion = {
+    id: string,
+    name: string,
+    tier: number,
+    imageurl: string,
+    origins: string[],
+    classes: string[],
+    starlevel: number
+}
+
 export type GameContextType = {
+    initialChampionList: ChampionDataModel[]|undefined,
+    setInitialChampionList: React.Dispatch<React.SetStateAction<ChampionDataModel[]|undefined>>,
     championBag: ChampionBag|undefined,
     setChampionBag: React.Dispatch<React.SetStateAction<ChampionBag|undefined>>,
     shopBag: (Champion|undefined)[],

@@ -18,7 +18,7 @@ interface HexProps {
 export default function Board() {
     const gameContext = useContext(GameContext);
     return (
-        <div className="flex flex-col gap-y-2">
+        <div className="grid grid-rows-4 row-end-4 gap-y-2 board-container">
             {gameContext.boardBag.map((boardRow, id) => {
                 return <HexRow boardHexes={boardRow} id={id.toString()} direction={0 === id % 2 ? 'left' : 'right'} key={`hex_row_${id}`} />
             })}
@@ -27,12 +27,12 @@ export default function Board() {
 }
 
 function HexRow(props : HexRowProps) {
-    
+
     return (
         <div id={props.id} className={
             "right" === props.direction ?
-            "flex grid-rows-7 gap-2 translate-x-14" :
-            "flex grid-rows-7 gap-2"
+            "flex grid-rows-7 relative gap-2 translate-x-14" :
+            "flex grid-rows-7 relative gap-2"
         }>
             {props.boardHexes.map((hex, id) => {
                 return <Hex id={`${props.id}-${id}`} champion={hex} key={`hex_${props.id}-${id}`} />
@@ -47,13 +47,12 @@ function Hex(props : HexProps) {
     });
 
     const style : CSSProperties = {
-        outline: isOver ? 'solid 2px rgb(8 145 178)' : undefined,
-        outlineOffset: isOver ? "-2px" : undefined
+        backgroundColor: isOver ? 'rgba(255, 255, 255, 0.25)' : undefined,
     }
     
     return (
         <div ref={setNodeRef} id={props.id}>
-            {undefined !== props.champion ?<ChampionHex currentPosition={props.id} champion={props.champion}/> : <div  style={style} className="hex"></div> }
+            {undefined !== props.champion ?<ChampionHex currentPosition={props.id} champion={props.champion}/> : <div className="board-hex"style={style} ></div> }
         </div>
     )
 }

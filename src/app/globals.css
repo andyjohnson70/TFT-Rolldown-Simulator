@@ -22,7 +22,7 @@ body {
   background-repeat: no-repeat;
 }
 
-.hex:before {
+.champion-hex:before {
   content: " ";
   width: 0; height: 30px;
   border-bottom: 30px solid #171717;
@@ -32,17 +32,15 @@ body {
   top: -30px;
 }
 
-.hex {
+.champion-hex {
   margin-top: 30px;
   width: 104px;
   height: 60px;
-  background-color: #171717;
   position: relative;
   background-size: cover;
-  opacity: .9;
 }
 
-.hex:after {
+.champion-hex:after {
   content: "";
   width: 0;
   height: 30px;
@@ -51,6 +49,106 @@ body {
   border-top: 30px solid #171717;
   border-left: 52px solid transparent;
   border-right: 52px solid transparent;
+}
+
+.board-hex:before {
+  content: " ";
+  width: 0; height: 30px;
+  border-bottom: 30px solid #171717;
+  border-left: 52px solid transparent;
+  border-right: 52px solid transparent;
+  position: absolute;
+  top: -30px;
+}
+
+.board-hex {
+  margin-top: 30px;
+  width: 104px;
+  height: 60px;
+  background-color: #171717;
+  position: relative;
+  background-size: cover;
+}
+
+.board-hex:after {
+  content: "";
+  width: 0;
+  height: 30px;
+  position: absolute;
+  bottom: -30px;
+  border-top: 30px solid #171717;
+  border-left: 52px solid transparent;
+  border-right: 52px solid transparent;
+}
+
+.tier-1-card-bg {
+  background: hsla(207, 43%, 12%, 1);
+  background: linear-gradient(360deg, hsla(207, 43%, 12%, 1) 60%, hsla(207, 20%, 20%, 1) 100%);
+  background: -moz-linear-gradient(360deg, hsla(207, 43%, 12%, 1) 60%, hsla(207, 20%, 20%, 1) 100%);
+  background: -webkit-linear-gradient(360deg, hsla(207, 43%, 12%, 1) 60%, hsla(207, 20%, 20%, 1) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#12212D", endColorstr="#29343D", GradientType=1 );
+}
+
+.tier-1-border {
+  border-right: 3px solid #29343D;
+  border-left: 3px solid #12212D;
+  border-top: 3px solid #0f1e29;
+}
+
+.tier-2-card-bg {
+  background: hsla(163, 53%, 14%, 1);
+  background: linear-gradient(360deg, hsla(163, 53%, 14%, 1) 60%, hsla(135, 66%, 22%, 1) 100%);  
+  background: -moz-linear-gradient(360deg, hsla(163, 53%, 14%, 1) 60%, hsla(135, 66%, 22%, 1) 100%);  
+  background: -webkit-linear-gradient(360deg, hsla(163, 53%, 14%, 1) 60%, hsla(135, 66%, 22%, 1) 100%);  
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#11372C", endColorstr="#135E26", GradientType=1 );
+}
+
+.tier-2-border {
+  border-right: 3px solid #135E26;
+  border-left: 3px solid #11372C;
+  border-top: 3px solid #164e29;
+}
+
+.tier-3-card-bg {
+  background: hsla(232, 45%, 20%, 1);
+  background: linear-gradient(360deg, hsla(232, 45%, 20%, 1) 60%, hsla(205, 64%, 27%, 1) 100%);  
+  background: -moz-linear-gradient(360deg, hsla(232, 45%, 20%, 1) 60%, hsla(205, 64%, 27%, 1) 100%);  
+  background: -webkit-linear-gradient(360deg, hsla(232, 45%, 20%, 1) 60%, hsla(205, 64%, 27%, 1) 100%);  
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#1C2249", endColorstr="#194E73", GradientType=1 );
+}
+
+.tier-3-border {
+  border-right: 3px solid #194E73;
+  border-left: 3px solid #1C2249;
+  border-top: 3px solid #194b6e;
+}
+
+.tier-4-card-bg {
+  background: hsla(298, 68%, 17%, 1);
+  background: linear-gradient(360deg, hsla(298, 68%, 17%, 1) 60%, hsla(310, 73%, 33%, 1) 100%);  
+  background: -moz-linear-gradient(360deg, hsla(298, 68%, 17%, 1) 60%, hsla(310, 73%, 33%, 1) 100%);  
+  background: -webkit-linear-gradient(360deg, hsla(298, 68%, 17%, 1) 60%, hsla(310, 73%, 33%, 1) 100%);  
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#470E49", endColorstr="#90167C", GradientType=1 );
+}
+
+.tier-4-border {
+  border-right: 3px solid #90167C;
+  border-left: 3px solid #470E49;
+  border-top: 3px solid #871776;
+}
+
+.tier-5-card-bg {
+  background: hsla(40, 86%, 22%, 1);
+  background: linear-gradient(360deg, hsla(40, 86%, 22%, 1) 60%, hsla(33, 96%, 32%, 1) 100%);  
+  background: -moz-linear-gradient(360deg, hsla(40, 86%, 22%, 1) 60%, hsla(33, 96%, 32%, 1) 100%);  
+  background: -webkit-linear-gradient(360deg, hsla(40, 86%, 22%, 1) 60%, hsla(33, 96%, 32%, 1) 100%);  
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#674808", endColorstr="#A15903", GradientType=1 );
+}
+
+.tier-5-border {
+  border-right: 3px solid #A15903;
+  border-left: 3px solid #674808;
+  border-top: 3px solid #413c32;
 }
 
 @layer utilities {

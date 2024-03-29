@@ -3,6 +3,8 @@ import { createContext } from "react";
 import { GameContextType } from "../lib/definitions";
 
 export const GameContext = createContext<GameContextType>({
+    initialChampionList: [],
+    setInitialChampionList: () => {},
     championBag: {
         Tier1Units: [],
         Tier2Units: [],
