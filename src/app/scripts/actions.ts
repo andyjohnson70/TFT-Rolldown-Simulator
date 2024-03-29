@@ -111,8 +111,8 @@ export function PurchaseChampion(gameContext : GameContextType, championCardProp
     const newBenchBag: (Champion|undefined)[] = [...gameContext.benchBag];
     const newShopBag: (Champion|undefined)[] = [...gameContext.shopBag];
 
-    const flatBoardBag: (Champion|undefined)[] = gameContext.boardBag.flat();
-    const allPlayerChampions: (Champion|undefined)[] = [...flatBoardBag, ...newBenchBag] 
+    let flatBoardBag: (Champion|undefined)[] = gameContext.boardBag.flat();
+    let allPlayerChampions: (Champion|undefined)[] = [...flatBoardBag, ...newBenchBag] 
 
     let levelUpChampion: boolean = false;
 
@@ -127,7 +127,7 @@ export function PurchaseChampion(gameContext : GameContextType, championCardProp
         let tempChamp : Champion|undefined = undefined;
         newBoardBag.forEach((row, i) => {
             row.forEach((champion, j) => {
-                if (champion && champion?.name === championToPurchase.name && !tempChamp) {
+                if (champion && champion?.name === championToPurchase.name && !tempChamp && champion.starlevel === 1) {
                     tempChamp = {
                         id: champion.id,
                         name: champion.name,
@@ -138,14 +138,14 @@ export function PurchaseChampion(gameContext : GameContextType, championCardProp
                         starlevel: 2
                     };
                     newBoardBag[i][j] = tempChamp;
-                } else if (champion && champion?.name === championToPurchase.name && tempChamp) {
+                } else if (champion && champion?.name === championToPurchase.name && tempChamp && champion.starlevel === 1) {
                     newBoardBag[i][j] = undefined;
                 }
             })
         });
 
         newBenchBag.forEach((champion, i) => {
-            if (champion && champion?.name === championToPurchase.name && !tempChamp) {
+            if (champion && champion?.name === championToPurchase.name && !tempChamp && champion.starlevel === 1) {
                 tempChamp = {
                     id: champion.id,
                     name: champion.name,
@@ -156,7 +156,7 @@ export function PurchaseChampion(gameContext : GameContextType, championCardProp
                     starlevel: 2
                 };
                 newBenchBag[i] = tempChamp;
-            } else if (champion && champion?.name === championToPurchase.name && tempChamp) {
+            } else if (champion && champion?.name === championToPurchase.name && tempChamp && champion.starlevel === 1) {
                 newBenchBag[i] = undefined;
             }
         });
@@ -164,6 +164,8 @@ export function PurchaseChampion(gameContext : GameContextType, championCardProp
 
     // Check if creating a two star was enough to start a three star champion
     if(levelTwoCheck) {
+        flatBoardBag = newBoardBag.flat();
+        allPlayerChampions = [...flatBoardBag, ...newBenchBag];
         const levelThreeCheck: boolean = allPlayerChampions.filter(champion => 
             champion &&
             champion.name === championToPurchase.name &&
@@ -174,7 +176,7 @@ export function PurchaseChampion(gameContext : GameContextType, championCardProp
             let tempChamp : Champion|undefined = undefined;
             newBoardBag.forEach((row, i) => {
                 row.forEach((champion, j) => {
-                    if (champion && champion?.name === championToPurchase.name && !tempChamp) {
+                    if (champion && champion?.name === championToPurchase.name && !tempChamp && champion.starlevel === 2) {
                         tempChamp = {
                             id: champion.id,
                             name: champion.name,
@@ -185,14 +187,14 @@ export function PurchaseChampion(gameContext : GameContextType, championCardProp
                             starlevel: 3
                         };
                         newBoardBag[i][j] = tempChamp;
-                    } else if (champion && champion?.name === championToPurchase.name && tempChamp) {
+                    } else if (champion && champion?.name === championToPurchase.name && tempChamp && champion.starlevel === 2) {
                         newBoardBag[i][j] = undefined;
                     }
                 })
             });
 
             newBenchBag.forEach((champion, i) => {
-                if (champion && champion?.name === championToPurchase.name && !tempChamp) {
+                if (champion && champion?.name === championToPurchase.name && !tempChamp && champion.starlevel === 2) {
                     tempChamp = {
                         id: champion.id,
                         name: champion.name,
@@ -203,7 +205,7 @@ export function PurchaseChampion(gameContext : GameContextType, championCardProp
                         starlevel: 3
                     };
                     newBenchBag[i] = tempChamp;
-                } else if (champion && champion?.name === championToPurchase.name && tempChamp) {
+                } else if (champion && champion?.name === championToPurchase.name && tempChamp && champion.starlevel === 2) {
                     newBenchBag[i] = undefined;
                 }
             });
@@ -232,8 +234,8 @@ export function PurchaseChampion(gameContext : GameContextType, championCardProp
     }
 }
 
-export function MoveChampion(boardBag : (Champion|undefined)[][], benchBag : (Champion|undefined)[], active : Active, over : Over) : { newBoardBag : (Champion|undefined)[][], newBenchBag : (Champion|undefined)[] } {
-    if(!active.data.current || !over) {
+export function MoveChampion(boardBag : (Champion|undefined)[][], benchBag : (Champion|undefined)[], active : Active, over : Over, level : number) : { newBoardBag : (Champion|undefined)[][], newBenchBag : (Champion|undefined)[] } {
+    if((!active.data.current || !over)) {
         return {
             newBoardBag: boardBag,
             newBenchBag: benchBag
@@ -243,10 +245,22 @@ export function MoveChampion(boardBag : (Champion|undefined)[][], benchBag : (Ch
     const currentPosition = active.data.current.currentPosition;
     const newPosition = over.id.toString();
 
+    const championsOnBoard = boardBag.reduce((item, row) => {
+        return item + row.reduce((innerItem, index) => innerItem + (index !== undefined ? 1 : 0), 0)
+    }, 0);
+
     const newBoardBag : (Champion|undefined)[][] = [...boardBag];
     const newBenchBag : (Champion|undefined)[] = [...benchBag];
     let tempChampCurrent : Champion|undefined = IdenityPosition(currentPosition, newBoardBag, newBenchBag);
     let tempChampToSwap : Champion|undefined = IdenityPosition(newPosition, newBoardBag, newBenchBag);
+
+    // If board does not have any more room, return
+    if (newPosition.includes("-") && championsOnBoard >= level && !tempChampToSwap) {
+        return {
+            newBoardBag: boardBag,
+            newBenchBag: benchBag
+        };
+    }
 
     // If the newPosition include a '-' then the champion is being moved to the board
     if(newPosition.includes("-")) {
@@ -313,22 +327,60 @@ export function SellChampion(boardBag : (Champion|undefined)[][], benchBag : (Ch
         newBenchBag[location] = undefined;
     }
 
+    let championsToAddBack : Champion[] = []
+
+    switch(tempChamp?.starlevel) {
+        case 1:
+            championsToAddBack.push(tempChamp);
+            break;
+        case 2:
+            for (let i = 0; i < 2; i++) {
+                const tempChampCopy : Champion = {
+                    id: tempChamp.id + `-${i}`,
+                    name: tempChamp.name,
+                    tier: tempChamp.tier,
+                    imageurl: tempChamp.imageurl,
+                    origins: tempChamp.origins,
+                    classes: tempChamp.classes,
+                    starlevel: 1
+                }
+                championsToAddBack.push(tempChampCopy);
+            }
+            championsToAddBack.push(tempChamp);
+            break
+        case 3:
+            for (let i = 0; i < 8; i++) {
+                const tempChampCopy : Champion = {
+                    id: tempChamp.id + `-${i}`,
+                    name: tempChamp.name,
+                    tier: tempChamp.tier,
+                    imageurl: tempChamp.imageurl,
+                    origins: tempChamp.origins,
+                    classes: tempChamp.classes,
+                    starlevel: 1
+                }
+                championsToAddBack.push(tempChampCopy);
+            }
+            championsToAddBack.push(tempChamp);
+            break;
+    }
+
     //Return champion to game bag
     switch(tempChamp?.tier) {
         case 1:
-            championBag.Tier1Units.push(tempChamp)
+            championsToAddBack.forEach(champion => championBag.Tier1Units.push(champion));
             break;
         case 2: 
-            championBag.Tier2Units.push(tempChamp)
+            championsToAddBack.forEach(champion => championBag.Tier2Units.push(champion));
             break;
         case 3:
-            championBag.Tier3Units.push(tempChamp)
+            championsToAddBack.forEach(champion => championBag.Tier3Units.push(champion));
             break;
         case 4:
-            championBag.Tier4Units.push(tempChamp)
+            championsToAddBack.forEach(champion => championBag.Tier4Units.push(champion));
             break;
         case 5:
-            championBag.Tier5Units.push(tempChamp)
+            championsToAddBack.forEach(champion => championBag.Tier5Units.push(champion));
             break;
     }
 
@@ -362,39 +414,39 @@ function IdenityPosition(position : string, boardBag : (Champion|undefined)[][],
     return positionResident;
 }
 
-export function FetchShopBag(gameContext : GameContextType) : { newChampionBag : ChampionBag|undefined , newShopBag : Champion[] } {
-    const shopOdds: number[] = SHOP_ODDS[gameContext.level - 2];
+export function FetchShopBag(championBag : ChampionBag|undefined, shopBag : (Champion|undefined)[], level : number) : { newChampionBag : ChampionBag|undefined , newShopBag : Champion[] } {
+    const shopOdds: number[] = SHOP_ODDS[level - 2];
     const currentShopTiers: number[] = [];
     const newShop: Champion[] = [];
     
     //Check if champion bag has been set
-    if (undefined === gameContext.championBag) {
+    if (undefined === championBag) {
         return { 
-            newChampionBag: gameContext.championBag, 
+            newChampionBag: championBag, 
             newShopBag: newShop
         };
     }
 
     //Refill champion bag with leftover shop units
-    if (gameContext.shopBag.length > 0) {
+    if (shopBag.length > 0) {
         for (var i = 0; i < 5; i++) {
-            let tempChampion = gameContext.shopBag.shift();
+            let tempChampion = shopBag.shift();
             if (tempChampion !== undefined) {
                 switch(tempChampion?.tier) {
                     case 1:
-                        gameContext.championBag.Tier1Units.push(tempChampion);
+                        championBag.Tier1Units.push(tempChampion);
                         break;
                     case 2:
-                        gameContext.championBag.Tier2Units.push(tempChampion);
+                        championBag.Tier2Units.push(tempChampion);
                         break;
                     case 3:
-                        gameContext.championBag.Tier3Units.push(tempChampion);
+                        championBag.Tier3Units.push(tempChampion);
                         break;
                     case 4:
-                        gameContext.championBag.Tier4Units.push(tempChampion);
+                        championBag.Tier4Units.push(tempChampion);
                         break;
                     case 5:
-                        gameContext.championBag.Tier5Units.push(tempChampion);
+                        championBag.Tier5Units.push(tempChampion);
                         break;
                 }
                 
@@ -433,40 +485,40 @@ export function FetchShopBag(gameContext : GameContextType) : { newChampionBag :
 
         switch(currentShopTiers[index]) {
             case 1:
-                randomIndex = Math.floor(Math.random() * gameContext.championBag.Tier1Units.length);
-                newChampion = gameContext.championBag.Tier1Units[randomIndex];
-                gameContext.championBag.Tier1Units.splice(randomIndex, 1);
+                randomIndex = Math.floor(Math.random() * championBag.Tier1Units.length);
+                newChampion = championBag.Tier1Units[randomIndex];
+                championBag.Tier1Units.splice(randomIndex, 1);
                 newShop.push(newChampion);
                 break;
             case 2:
-                randomIndex = Math.floor(Math.random() * gameContext.championBag.Tier2Units.length);
-                newChampion = gameContext.championBag.Tier2Units[randomIndex];
-                gameContext.championBag.Tier2Units.splice(randomIndex, 1);
+                randomIndex = Math.floor(Math.random() * championBag.Tier2Units.length);
+                newChampion = championBag.Tier2Units[randomIndex];
+                championBag.Tier2Units.splice(randomIndex, 1);
                 newShop.push(newChampion);
                 break;
             case 3:
-                randomIndex = Math.floor(Math.random() * gameContext.championBag.Tier3Units.length);
-                newChampion = gameContext.championBag.Tier3Units[randomIndex];
-                gameContext.championBag.Tier3Units.splice(randomIndex, 1);
+                randomIndex = Math.floor(Math.random() * championBag.Tier3Units.length);
+                newChampion = championBag.Tier3Units[randomIndex];
+                championBag.Tier3Units.splice(randomIndex, 1);
                 newShop.push(newChampion);
                 break;
             case 4:
-                randomIndex = Math.floor(Math.random() * gameContext.championBag.Tier4Units.length);
-                newChampion = gameContext.championBag.Tier4Units[randomIndex];
-                gameContext.championBag.Tier4Units.splice(randomIndex, 1);
+                randomIndex = Math.floor(Math.random() * championBag.Tier4Units.length);
+                newChampion = championBag.Tier4Units[randomIndex];
+                championBag.Tier4Units.splice(randomIndex, 1);
                 newShop.push(newChampion);
                 break;
             case 5:
-                randomIndex = Math.floor(Math.random() * gameContext.championBag.Tier5Units.length);
-                newChampion = gameContext.championBag.Tier5Units[randomIndex];
-                gameContext.championBag.Tier5Units.splice(randomIndex, 1);
+                randomIndex = Math.floor(Math.random() * championBag.Tier5Units.length);
+                newChampion = championBag.Tier5Units[randomIndex];
+                championBag.Tier5Units.splice(randomIndex, 1);
                 newShop.push(newChampion);
                 break;
         }
     }
 
     return { 
-        newChampionBag : gameContext.championBag, 
+        newChampionBag : championBag, 
         newShopBag: newShop
     };
 }

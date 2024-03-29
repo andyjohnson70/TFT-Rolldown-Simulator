@@ -22,36 +22,20 @@ body {
   background-repeat: no-repeat;
 }
 
-.champion-hex:before {
-  content: " ";
-  width: 0; height: 30px;
-  border-bottom: 30px solid #171717;
-  border-left: 52px solid transparent;
-  border-right: 52px solid transparent;
-  position: absolute;
-  top: -30px;
-}
-
-.champion-hex {
-  margin-top: 30px;
-  width: 104px;
-  height: 60px;
-  position: relative;
+.hex {
+  -webkit-clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background-color: #171717;
   background-size: cover;
+  height: 120px;
+  width: 104px;
 }
 
-.champion-hex:after {
-  content: "";
-  width: 0;
-  height: 30px;
-  position: absolute;
-  bottom: -30px;
-  border-top: 30px solid #171717;
-  border-left: 52px solid transparent;
-  border-right: 52px solid transparent;
+.champion-text {
+  text-shadow: 2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000, 0 -2px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 }
 
-.board-hex:before {
+/* .hex:before {
   content: " ";
   width: 0; height: 30px;
   border-bottom: 30px solid #171717;
@@ -61,16 +45,17 @@ body {
   top: -30px;
 }
 
-.board-hex {
+.hex {
   margin-top: 30px;
   width: 104px;
   height: 60px;
   background-color: #171717;
   position: relative;
   background-size: cover;
+  opacity: .9;
 }
 
-.board-hex:after {
+.hex:after {
   content: "";
   width: 0;
   height: 30px;
@@ -79,7 +64,7 @@ body {
   border-top: 30px solid #171717;
   border-left: 52px solid transparent;
   border-right: 52px solid transparent;
-}
+} */
 
 .tier-1-card-bg {
   background: hsla(207, 43%, 12%, 1);

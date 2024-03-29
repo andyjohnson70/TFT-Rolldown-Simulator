@@ -1,5 +1,5 @@
 "use client";
-import { InitializeChampionBag, MoveChampion, SellChampion } from "./scripts/actions";
+import { FetchShopBag, InitializeChampionBag, MoveChampion, SellChampion } from "./scripts/actions";
 import { RerollButton, XpButton } from "./components/buttons";
 import { Shop } from "./components/shop";
 import { GameContext } from "./context/context";
@@ -7,10 +7,11 @@ import { Champion, ChampionBag, ChampionDataModel } from "./lib/definitions";
 import useSWRImmutable from "swr/immutable";
 import Board from "./components/board";
 import Bench from "./components/bench";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DndContext, DragEndEvent, Over } from "@dnd-kit/core";
 import GameMenu from "./components/gamemenu";
 import { Timer } from "./components/timer";
+import useSound from "use-sound";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -31,6 +32,8 @@ export default function Home() {
   const [rerollKeybind, setRerollKeybind] = useState<string>("d");
   const [sellKeybind, setSellKeybind] = useState<string>("e");
   const [arenaUrl, setArenaUrl] = useState<string>("public/arenas/Arena.jpg");
+  const [rerollSFX] = useSound("/sounds/reroll.mp3");
+  const [sellSFX] = useSound("/sounds/sell.mp3");
 
   if (undefined === initialChampionList && data) {
     setInitialChampionList(data);
@@ -41,11 +44,28 @@ export default function Home() {
     setChampionBag(initialChampionBag);
   }
 
+  function handleKeydownEvent(event: KeyboardEvent) {
+    if(!gameActive) return
+    
+    if(event.key === rerollKeybind) {
+        const { newChampionBag, newShopBag } = FetchShopBag(championBag, shopBag, level);
+        rerollSFX();
+        setChampionBag(newChampionBag);
+        setShopBag(newShopBag);
+        setGold(gold.valueOf() - 2);
+    }
+
+    if(event.key === xpKeybind) {
+
+    }
+  }
+
   function handleDragEnd(event: DragEndEvent) {
     const {active, over} = event;
 
     if(over && over.id === 'shop') {
       const { newBoardBag, newBenchBag, newChampionBag, newGold } = SellChampion(boardBag, benchBag, championBag, gold, active, over);
+      sellSFX();
       //If bench bags are not equal to each other the unit sold was from the bench
       if(JSON.stringify(newBenchBag) !== JSON.stringify(benchBag)) {
         setBenchBag(newBenchBag);
@@ -56,11 +76,16 @@ export default function Home() {
       setGold(newGold);
     } 
     else if (over && over.id) {
-      const { newBoardBag, newBenchBag } = MoveChampion(boardBag, benchBag, active, over);
+      const { newBoardBag, newBenchBag } = MoveChampion(boardBag, benchBag, active, over, level);
       setBoardBag(newBoardBag);
       setBenchBag(newBenchBag);
     }
   }
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeydownEvent)
+    return () => window.removeEventListener('keydown', handleKeydownEvent)
+  })
   
   return (
     <GameContext.Provider value={{
@@ -81,8 +106,8 @@ export default function Home() {
     }}>
       <DndContext autoScroll={false} onDragEnd={handleDragEnd}>          
         <main className="flex min-h-screen flex-col items-center overflow-hidden">
-          { gameActive ? <GameMenu /> : null}
-          <div className="flex flex-col items-center grow w-full">
+          { !gameActive ? <GameMenu /> : null}
+          <div className="flex flex-col grow items-center w-full">
             <div>
               <Timer />
             </div>
@@ -90,7 +115,7 @@ export default function Home() {
 
             </div>
 
-            <div className="grow content-end pb-20">
+            <div className="grow content-end pb-8">
               <Board/>
             </div>
 

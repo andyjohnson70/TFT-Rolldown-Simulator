@@ -18,11 +18,21 @@ interface HexProps {
 export default function Board() {
     const gameContext = useContext(GameContext);
     return (
-        <div className="grid grid-rows-4 row-end-4 gap-y-2 board-container">
+        <div className="z-10">
+            <div className="text-white champion-text text-4xl flex content-end justify-end">
+                {gameContext.boardBag.reduce((item, row) => {
+                    return item + row.reduce((innerItem, index) => innerItem + (index !== undefined ? 1 : 0), 0)
+                }, 0)} / {gameContext.level}
+            </div>
+
+            <div className="grid grid-rows-4 row-end-4 gap-y-2 board-container">
+            
             {gameContext.boardBag.map((boardRow, id) => {
                 return <HexRow boardHexes={boardRow} id={id.toString()} direction={0 === id % 2 ? 'left' : 'right'} key={`hex_row_${id}`} />
             })}
         </div>
+        </div>
+        
     );
 }
 
@@ -52,7 +62,7 @@ function Hex(props : HexProps) {
     
     return (
         <div ref={setNodeRef} id={props.id}>
-            {undefined !== props.champion ?<ChampionHex currentPosition={props.id} champion={props.champion}/> : <div className="board-hex"style={style} ></div> }
+            {undefined !== props.champion ?<ChampionHex currentPosition={props.id} champion={props.champion}/> : <div className="hex"style={style} ></div> }
         </div>
     )
 }

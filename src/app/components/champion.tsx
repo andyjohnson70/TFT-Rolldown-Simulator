@@ -5,6 +5,7 @@ import { PurchaseChampion } from "../scripts/actions";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities"
 import Image from "next/image";
+import useSound from 'use-sound';
 
 export interface ChampionCardProps {
     champion?: Champion,
@@ -21,14 +22,21 @@ interface TraitItemProps {
 }
 
 export function ChampionCard(props: ChampionCardProps) {
+    const [purchaseSFX] = useSound("/sounds/purchase.mp3");
+    const [levelUpSFX] = useSound("/sounds/levelup.mp3");
+
     const gameContext = useContext(GameContext);
     const purchaseChampion = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
         //If bench has no space, then you cannot purchase a champion
-        if(!gameContext.benchBag.some((slot) => slot === undefined)) {
+        if(!gameContext.benchBag.some((slot) => slot === undefined) && gameContext.benchBag.filter(champion => champion && champion.name === props.champion?.name && champion.starlevel === 1).length < 2) {
             return;
         }
         const {newBoardBag, newBenchBag, newShopBag, newGold, levelUpChampion} = PurchaseChampion(gameContext, props);
+        purchaseSFX();
+        if(levelUpChampion) {
+            levelUpSFX();
+        }
         gameContext.setBoardBag(newBoardBag);
         gameContext.setBenchBag(newBenchBag);
         gameContext.setShopBag(newShopBag);
@@ -38,6 +46,9 @@ export function ChampionCard(props: ChampionCardProps) {
     return (
         undefined != props.champion ?
         <div className="champion-card w-1/5 m-2" onClick={purchaseChampion}>
+            <audio className="audio">
+                <source src="/sounds/purchase.mp3" />
+            </audio>
             <div className="tier-indicator"></div>
             <div className={`bg-center relative bg-no-repeat bg-cover h-4/5 tier-${props.champion.tier}-border`} style={{
                 backgroundImage: `url(${props.champion.imageurl})`,
@@ -85,19 +96,42 @@ export function ChampionHex(props: ChampionHexProps) {
         id: `${props.champion.id}`,
         data: {
             tier: props.champion.tier,
-            currentPosition: props.currentPosition
+            currentPosition: props.currentPosition,
         }
     });
 
+    const hexStyle : CSSProperties = {
+        transform: CSS.Translate.toString(transform),
+        zIndex: isDragging ? 1000 : 1
+    };
+
     const style : CSSProperties = {
         backgroundImage: `url(${props.champion.imageurl})`,
-        transform: CSS.Translate.toString(transform),
     };
 
     return (
-        <div ref={setNodeRef} {...listeners} {...attributes}
-        className="champion-hex bg-no-repeat bg-[90%_100%]" style={style}>
-            <div className="">{props.champion.starlevel}</div>
+        <div ref={setNodeRef} {...listeners} {...attributes} style={hexStyle} className="relative">
+            <div className="absolute inset-x-0 top-0 flex flex-row justify-center">
+                <div className="flex z-10">
+                    {props.champion.origins.map((origin, id) => {
+                        return <div key={`trait_${id}`} className="flex items-center border-black border-[1px] rounded-full bg-[#3d3c39] w-[20px] h-[20px] m-1"><Image alt={origin} width={16} height={16} className="mx-auto p-[2px]" src={`/traits/${origin}.png`} /></div>
+                    })}
+                </div>  
+                <div className="flex z-10">
+                    {props.champion.classes.map((name, id) => {
+                        return <div key={`trait_${id}`} className="flex items-center border-black border-[1px] rounded-full bg-[#3d3c39] w-[20px] h-[20px] m-1"><Image alt={name} width={16} height={16} className="mx-auto p-[2px]" src={`/traits/${name}.png`}/></div>
+                    })}
+                </div>  
+            </div>
+
+            <div className="hex flex flex-col items-center bg-no-repeat bg-[90%_100%]" style={style}>
+                <div className="text-white text-md grow content-center champion-text">{props.champion.name}</div>
+            </div>
+
+            <div className="absolute inset-x-0 bottom-0 flex flex-row justify-center">
+                <div className="z-10">{props.champion.starlevel > 1 ? <Image alt={`${props.champion.starlevel}`} width={50} height={20} className="mx-auto p-[2px]" src={props.champion.starlevel === 3 ? "/threeStar.png" : "/twoStar.png"}/> : <div className="h-[20px]"></div> }</div>
+            </div>
         </div>
+        
     );
 }
