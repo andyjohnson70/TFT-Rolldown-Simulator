@@ -16,10 +16,22 @@
   }
 }
 
+main {
+  --s: calc(100vh * 0.1111111111);
+}
+
 body {
   background-image: url("../../public/arenas/Arena.jpg");
   background-position: center bottom;
   background-repeat: no-repeat;
+}
+
+.bench {
+  height: var(--s);
+}
+
+.hex-row {
+  margin-bottom: calc(-var(--s) * 0.2885);
 }
 
 .hex {
@@ -27,8 +39,8 @@ body {
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
   background-color: #171717;
   background-size: cover;
-  height: 120px;
-  width: 104px;
+  height: var(--s);
+  width: calc(var(--s) * 0.8660254);
 }
 
 .border-text {

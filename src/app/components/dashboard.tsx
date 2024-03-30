@@ -2,6 +2,7 @@ import Image from "next/image";
 import { GameContext } from "../context/context";
 import { useContext } from "react";
 import { SHOP_ODDS, XP_NEEDED } from "../lib/definitions";
+import React from "react";
 
 export default function Dashboard() {
     return (

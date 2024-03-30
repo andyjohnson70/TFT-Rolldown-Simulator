@@ -3,6 +3,7 @@ import { GameContext } from "../context/context";
 import { Champion, ChampionBag, GameContextType, SHOP_ODDS } from "../lib/definitions";
 import { ChampionCard } from "./champion";
 import { useDroppable } from "@dnd-kit/core";
+import React from "react";
 
 export function Shop() {
     const gameContext = useContext(GameContext);

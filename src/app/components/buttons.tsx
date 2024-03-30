@@ -3,6 +3,7 @@ import { GameContext } from "../context/context";
 import { BuyXP, FetchShopBag } from "../scripts/actions";
 import useSound from "use-sound";
 import Image from "next/image";
+import React from "react";
 
 export function XpButton() {
     const [xpSFX] = useSound("/sounds/xp.mp3");

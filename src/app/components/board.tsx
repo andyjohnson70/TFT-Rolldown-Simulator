@@ -3,6 +3,7 @@ import { Champion } from "../lib/definitions";
 import { ChampionHex } from "./champion";
 import { CSSProperties, useContext } from "react";
 import { GameContext } from "../context/context";
+import React from "react";
 
 interface HexRowProps {
     boardHexes: (Champion|undefined)[],
@@ -41,8 +42,8 @@ function HexRow(props : HexRowProps) {
     return (
         <div id={props.id} className={
             "right" === props.direction ?
-            "flex grid-rows-7 relative gap-2 translate-x-14" :
-            "flex grid-rows-7 relative gap-2"
+            "hex-row flex grid-rows-7 relative gap-2 translate-x-14" :
+            "hex-row flex grid-rows-7 relative gap-2"
         }>
             {props.boardHexes.map((hex, id) => {
                 return <Hex id={`${props.id}-${id}`} champion={hex} key={`hex_${props.id}-${id}`} />

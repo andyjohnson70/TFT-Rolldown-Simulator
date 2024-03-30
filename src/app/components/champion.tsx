@@ -6,6 +6,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities"
 import Image from "next/image";
 import useSound from 'use-sound';
+import React from "react";
 
 export interface ChampionCardProps {
     champion?: Champion,
@@ -27,7 +28,7 @@ export function ChampionCard(props: ChampionCardProps) {
 
     const gameContext = useContext(GameContext);
     const purchaseChampion = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if(props.champion && (!gameContext.gameActive || gameContext.gold < props.champion?.tier)) {
+        if(props.champion && (gameContext.gameActive || gameContext.gold < props.champion?.tier)) {
             return;
         }
         e.preventDefault();
@@ -49,9 +50,6 @@ export function ChampionCard(props: ChampionCardProps) {
     return (
         undefined != props.champion ?
         <div className="champion-card w-1/5 m-2" onClick={purchaseChampion}>
-            <audio className="audio">
-                <source src="/sounds/purchase.mp3" />
-            </audio>
             <div className="tier-indicator"></div>
             <div className={`bg-center relative bg-no-repeat bg-cover h-4/5 tier-${props.champion.tier}-border`} style={{
                 backgroundImage: `url(${props.champion.imageurl})`,

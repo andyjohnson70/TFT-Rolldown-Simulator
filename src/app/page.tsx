@@ -13,6 +13,7 @@ import GameMenu from "./components/gamemenu";
 import { Timer } from "./components/timer";
 import useSound from "use-sound";
 import Dashboard from "./components/dashboard";
+import React from "react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 

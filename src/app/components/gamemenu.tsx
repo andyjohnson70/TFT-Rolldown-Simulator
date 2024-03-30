@@ -4,6 +4,7 @@ import { EndGame } from "../scripts/actions";
 import useSound from "use-sound";
 import { Champion } from "../lib/definitions";
 import { ChampionHex } from "./champion";
+import React from "react";
 
 
 export default function GameMenu() {

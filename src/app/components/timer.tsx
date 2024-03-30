@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { GameContext } from "../context/context";
 import { EndGame } from "../scripts/actions";
+import React from "react";
 
 
 export function Timer() {

@@ -13,7 +13,7 @@ export default function Bench() {
     const gameContext = useContext(GameContext);
 
     return (
-        <div className="bench flex w-full 2xl:w-7/12 h-[120px]">
+        <div className="bench flex w-full 2xl:w-7/12">
             {gameContext.benchBag.map((champion, id) => {
                 return <BenchSlot champion={champion} index={id} key={`bench_slot_${id}`} />
             })}
