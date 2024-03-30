@@ -40,7 +40,7 @@ export default function GameMenu() {
 
     const handleGameStart = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        if(!gameContext.initialChampionList) {
+        if(!gameContext.championBag) {
             return;
         }
         gameContext.setBenchBag(Array(9).fill(undefined));

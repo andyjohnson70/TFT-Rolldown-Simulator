@@ -20,6 +20,7 @@
     "pg-connection-string": "^2.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "sharp": "^0.33.3",
     "swr": "^2.2.5",
     "use-sound": "^4.0.1",
     "vercel": "^32.7.2"
