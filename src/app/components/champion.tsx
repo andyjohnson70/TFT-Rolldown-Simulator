@@ -111,7 +111,7 @@ export function ChampionCard(props: ChampionCardProps) {
         <div className="champion-card w-1/5 m-2" onClick={purchaseChampion}>
             <div className="tier-indicator"></div>
             <div className={`relative h-4/5 tier-${props.champion.tier}-border`}>
-                <Image className="z-0" alt={props.champion.name} layout="fill" sizes="(max-width: 768) 150px, 110px (min-width: 768) 160px 110px" objectFit="cover" objectPosition="center" src={GetChampionImage(props.champion.name)} priority={true} />
+                <Image className="z-0" alt={props.champion.name} fill={true} sizes="(max-width: 768) 150px, 110px (min-width: 768) 160px 110px" src={GetChampionImage(props.champion.name)} priority={true} />
                 <div className="absolute bottom-0 z-10">
                     <ul className="origin-list">
                         {props.champion.origins.map((trait, id) => {
