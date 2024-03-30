@@ -8,16 +8,19 @@ import React from "react";
 export function XpButton() {
     const [xpSFX] = useSound("/sounds/xp.mp3");
     const gameContext = useContext(GameContext);
+
     const buyXP = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
-        // if (!gameContext.gameActive || gameContext.gold < 4 || gameContext.level === 10) {
-        //     return
-        // }
+        if (!gameContext.gameActive || gameContext.gold < 4 || gameContext.level === 10) {
+           return
+        }
         const { newLevel, newXP, newGold } = BuyXP(gameContext.level, gameContext.xp, gameContext.gold);
+        xpSFX();
         gameContext.setLevel(newLevel);
         gameContext.setXP(newXP);
         gameContext.setGold(newGold);
     }
+
     return (
         <div className="bg-sky-600 grow flex flex-col justify-center m-2" onClick={buyXP}>
             <div className="flex flex-col pl-3">
@@ -41,9 +44,9 @@ export function RerollButton() {
     const gameContext = useContext(GameContext);
     const rerollShop = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
-        // if (!gameContext.gameActive || gameContext.gold < 2) {
-        //     return
-        // }
+        if (!gameContext.gameActive || gameContext.gold < 2) {
+            return
+        }
         const { newChampionBag, newShopBag } = FetchShopBag(gameContext.championBag, gameContext.shopBag, gameContext.level);
         rerollSFX();
         gameContext.setChampionBag(newChampionBag);

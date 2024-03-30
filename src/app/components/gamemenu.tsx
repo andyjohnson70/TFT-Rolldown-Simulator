@@ -1,6 +1,6 @@
 import { GameContext } from "../context/context";
 import { useContext } from "react";
-import { EndGame } from "../scripts/actions";
+import { EndGame, FetchShopBag, InitializeChampionBag } from "../scripts/actions";
 import useSound from "use-sound";
 import { Champion } from "../lib/definitions";
 import { ChampionHex } from "./champion";
@@ -40,9 +40,19 @@ export default function GameMenu() {
 
     const handleGameStart = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        startTimer();
+        if(!gameContext.initialChampionList) {
+            return;
+        }
+        gameContext.setBenchBag(Array(9).fill(undefined));
+        gameContext.setBoardBag(Array.from(Array(4), () => new Array(7).fill(undefined)));
+        const initialChampionBag = InitializeChampionBag(gameContext.initialChampionList);
+        gameContext.setChampionBag(initialChampionBag);
+        const { newChampionBag, newShopBag } = FetchShopBag(gameContext.championBag, gameContext.shopBag, gameContext.level);
+        gameContext.setShopBag(newShopBag);
+        gameContext.setChampionBag(newChampionBag);
         gameContext.setGameEnded(false);
         gameContext.setGameActive(true);
+        startTimer();
     }
 
     return (
@@ -52,7 +62,7 @@ export default function GameMenu() {
                     <div className="mx-auto text-[#efe5d1] text-4xl p-3 xl:pb-12">
                         Game Options
                     </div>
-                    <div className="flex flex-col gap-y-4">
+                    <div className="flex flex-col h-full gap-y-4">
                         <div className="option-row flex justify-between p-3">
                             <label className="option-label text-[#ccbd91] text-2xl">
                                 Level:
@@ -88,14 +98,7 @@ export default function GameMenu() {
                             <input id="xpKeybind" type="text" maxLength={1} className="input text-center rounded-lg border-[#715527] border-2 max-w-[40px]" onChange={e => gameContext.setXPKeybind(e.target.value)} value={gameContext.xpKeybind}></input>
                         </div>
 
-                        <div className="option-row flex justify-between p-3">
-                            <label className="option-label text-[#ccbd91] text-2xl">
-                                Sell Unit Keybind:
-                            </label>
-                            <input id="sellKeybind" type="text" maxLength={1} className="input text-center rounded-lg border-[#715527] border-2 max-w-[40px]" onChange={e => gameContext.setSellKeybind(e.target.value)} value={gameContext.sellKeybind}></input>
-                        </div>
-
-                        <div className="option-row flex justify-between p-3">
+                        <div className="option-row flex mt-auto justify-between pb-8">
                             <button className="bg-[#1e2328] border-[#c8aa6d] border-2 text-[#ccbd91] w-6/12 mx-auto" onClick={handleGameStart}>
                                 Start
                             </button>
@@ -103,8 +106,8 @@ export default function GameMenu() {
                     </div>
                 </div>
                 
-                <div className="flex h-full w-1/2 xl:w-4/12">
-                    {gameContext.gameEnded ?
+                <div className="flex flex-col h-full grow">
+                    {!gameContext.gameEnded ?
                         <Overview /> :
                         <GameSummary />
                     }
@@ -116,9 +119,25 @@ export default function GameMenu() {
 
 function Overview () {
     return (
-        <div>
-            <div>
-                
+        <div className="flex flex-col w-3/4 mx-auto">
+            <div className="text-[#efe5d1] text-4xl mx-auto p-3 xl:pb-12">
+                Overview
+            </div>
+
+            <div className="text-[#efe5d1] text-xl mx-auto p-3">
+                Use this tool to help pracice your roll down turns in Teamfight Tactics.
+            </div>
+
+            <div className="text-[#efe5d1] text-xl mx-auto p-3">
+                Set your current level, how much gold you have, how long your turn is, and your keybinds to start.
+            </div>
+
+            <div className="text-[#efe5d1] text-xl mx-auto p-3">
+                @ScarnoseJohnson on Twitter for any suggestions or bug reports.
+            </div>
+
+            <div className="text-[#efe5d1] text-xl mx-auto p-3">
+                Enjoy!
             </div>
         </div>
     );
@@ -129,10 +148,10 @@ function GameSummary () {
     const flatBoardBag: (Champion|undefined)[] = gameContext.boardBag.flat();
     return (
         <div className="flex flex-col">
-            <div className="text-white font-bold text-2xl mx-auto">Game Summary</div>
+            <div className="text-[#efe5d1] font-bold text-2xl mx-auto">Game Summary</div>
             <div className="flex flex-col">
-                <div className="text-white font-bold text-xl">Board</div>
-                <div className="flex flex-row gap-x-2">
+                <div className="text-[#efe5d1] font-bold text-xl mx-auto pt-8">Board</div>
+                <div className="flex flex-row mx-auto gap-x-2">
                     {flatBoardBag.map((champion, id) => {
                         return champion ? <ChampionHex key={`board_champion_hex_${id}`} champion={champion} currentPosition="id" /> : null
                     })}
@@ -140,8 +159,8 @@ function GameSummary () {
             </div>
 
             <div className="flex flex-col">
-                <div className="text-white font-bold text-xl mx-auto">Bench</div>
-                <div className="flex flex-row gap-x-2">
+                <div className="text-[#efe5d1] font-bold text-xl mx-auto pt-8">Bench</div>
+                <div className="flex flex-row mx-auto gap-x-2">
                     {gameContext.benchBag.map((champion, id) => {
                         return champion ? <ChampionHex key={`bench_champion_hex_${id}`} champion={champion} currentPosition="id" /> : null
                     })}

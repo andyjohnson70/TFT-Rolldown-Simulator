@@ -28,7 +28,7 @@ export function ChampionCard(props: ChampionCardProps) {
 
     const gameContext = useContext(GameContext);
     const purchaseChampion = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if(props.champion && (gameContext.gameActive || gameContext.gold < props.champion?.tier)) {
+        if(props.champion && (!gameContext.gameActive || gameContext.gold < props.champion?.tier)) {
             return;
         }
         e.preventDefault();

@@ -543,14 +543,10 @@ export function FetchShopBag(championBag : ChampionBag|undefined, shopBag : (Cha
 
 
 export function EndGame(gameContext : GameContextType) {
-    gameContext.setBenchBag(Array(9).fill(undefined));
-    gameContext.setBoardBag(Array.from(Array(4), () => new Array(7).fill(undefined)));
     gameContext.setShopBag(Array(5).fill(undefined));
     gameContext.setLevel(7);
     gameContext.setGold(50);
     gameContext.setTime(50);
-    const newChampionBag = InitializeChampionBag(gameContext.initialChampionList);
-    gameContext.setChampionBag(newChampionBag);
     gameContext.setGameActive(false);
     gameContext.setGameEnded(true);
     return;

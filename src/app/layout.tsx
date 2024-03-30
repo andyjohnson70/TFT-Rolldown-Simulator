@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TFT Rolldown Simulator",
-  description: "Teamfight Tactics toll created by Andrew Johnson",
+  title: "Set 11 Rolldown Simulator",
+  description: "Teamfight Tactics Rolldown practice tool for set 11",
 };
 
 export default function RootLayout({

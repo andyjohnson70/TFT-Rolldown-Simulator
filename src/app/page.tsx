@@ -49,7 +49,7 @@ export default function Home() {
   }
 
   function handleKeydownEvent(event: KeyboardEvent) {
-    if(gameActive) return
+    if(!gameActive) return
     
     if(event.key === rerollKeybind  && gold >= 2) {
         const { newChampionBag, newShopBag } = FetchShopBag(championBag, shopBag, level);
@@ -115,7 +115,7 @@ export default function Home() {
     }}>
       <DndContext autoScroll={false} onDragEnd={handleDragEnd}>          
         <main className="flex min-h-screen flex-col items-center overflow-hidden">
-          { gameActive ? <GameMenu /> : null}
+          { !gameActive ? <GameMenu /> : null}
           <div className="flex flex-col grow items-center w-full">
             <div>
               <Timer />
