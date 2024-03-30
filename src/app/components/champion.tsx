@@ -50,14 +50,15 @@ export function ChampionCard(props: ChampionCardProps) {
     return (
         undefined != props.champion ?
         <div className="champion-card w-1/5 m-2" onClick={purchaseChampion}>
-            <div className={`relative h-4/5 tier-${props.champion.tier}-border`}>
-                <div className="tier-indicator absolute top-0 z-10">{
+            <div className={`bg-center relative bg-no-repeat bg-cover h-4/5 tier-${props.champion.tier}-border`} style={{
+                backgroundImage: `url(${props.champion.imageurl})`,
+            }}>
+                <div className="tier-indicator top-0 z-10 w-8/12 mx-auto">{
                     props.champion.tier > 1 ?
-                    <Image alt="tier-indicator" src={`/tiers/cost-${props.champion.tier}.webp`}/> :
+                    <Image alt="tier-indicator" width={100} height={100} src={`/tiers/cost-${props.champion.tier}.webp`}/> :
                     null
                 }
                 </div>
-                <Image className="z-0" alt={props.champion.name} fill={true} sizes="(max-width: 768) 150px, 110px (min-width: 768) 160px 110px" src={props.champion.imageurl} priority={true} />
                 <div className="absolute bottom-0 z-10">
                     <ul className="origin-list">
                         {props.champion.origins.map((trait, id) => {

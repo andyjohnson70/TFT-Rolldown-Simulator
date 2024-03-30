@@ -44,7 +44,7 @@ function ShopPercentage() {
 function Gold() {
     const gameContext = useContext(GameContext);
     return(
-        <div className="flex flex-row bg-[#152023] border-[#785a28] border-x-2 border-t-2 mx-auto">
+        <div className="flex flex-row bg-[#152023] border-[#785a28] border-x-2 border-t-2 ml-40">
             <div className="content-center pl-5">
                 <Image alt="gold icon" width={16} height={16} src="/gold.png" />
             </div>
