@@ -27,6 +27,9 @@ export function ChampionCard(props: ChampionCardProps) {
 
     const gameContext = useContext(GameContext);
     const purchaseChampion = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if(props.champion && (!gameContext.gameActive || gameContext.gold < props.champion?.tier)) {
+            return;
+        }
         e.preventDefault();
         //If bench has no space, then you cannot purchase a champion
         if(!gameContext.benchBag.some((slot) => slot === undefined) && gameContext.benchBag.filter(champion => champion && champion.name === props.champion?.name && champion.starlevel === 1).length < 2) {
@@ -125,7 +128,7 @@ export function ChampionHex(props: ChampionHexProps) {
             </div>
 
             <div className="hex flex flex-col items-center bg-no-repeat bg-[90%_100%]" style={style}>
-                <div className="text-white text-md grow content-center champion-text">{props.champion.name}</div>
+                <div className="text-white text-md grow content-center border-text">{props.champion.name}</div>
             </div>
 
             <div className="absolute inset-x-0 bottom-0 flex flex-row justify-center">

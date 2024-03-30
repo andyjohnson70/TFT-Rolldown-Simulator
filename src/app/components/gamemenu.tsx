@@ -1,7 +1,9 @@
 import { GameContext } from "../context/context";
 import { useContext } from "react";
-import { ResetGameState } from "../scripts/actions";
+import { EndGame } from "../scripts/actions";
 import useSound from "use-sound";
+import { Champion } from "../lib/definitions";
+import { ChampionHex } from "./champion";
 
 
 export default function GameMenu() {
@@ -22,7 +24,7 @@ export default function GameMenu() {
                 }
                 if (time === 1) {
                     setTimeout(() => {
-                        ResetGameState(gameContext);
+                        EndGame(gameContext);
                     }, 2000);
                  }
                  if(time === 0) {
@@ -38,6 +40,7 @@ export default function GameMenu() {
     const handleGameStart = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
         startTimer();
+        gameContext.setGameEnded(false);
         gameContext.setGameActive(true);
     }
 
@@ -100,7 +103,47 @@ export default function GameMenu() {
                 </div>
                 
                 <div className="flex h-full w-1/2 xl:w-4/12">
+                    {gameContext.gameEnded ?
+                        <Overview /> :
+                        <GameSummary />
+                    }
+                </div>
+            </div>
+        </div>
+    );
+}
 
+function Overview () {
+    return (
+        <div>
+            <div>
+                
+            </div>
+        </div>
+    );
+}
+
+function GameSummary () {
+    const gameContext = useContext(GameContext);
+    const flatBoardBag: (Champion|undefined)[] = gameContext.boardBag.flat();
+    return (
+        <div className="flex flex-col">
+            <div className="text-white font-bold text-2xl mx-auto">Game Summary</div>
+            <div className="flex flex-col">
+                <div className="text-white font-bold text-xl">Board</div>
+                <div className="flex flex-row gap-x-2">
+                    {flatBoardBag.map((champion, id) => {
+                        return champion ? <ChampionHex key={`board_champion_hex_${id}`} champion={champion} currentPosition="id" /> : null
+                    })}
+                </div>
+            </div>
+
+            <div className="flex flex-col">
+                <div className="text-white font-bold text-xl mx-auto">Bench</div>
+                <div className="flex flex-row gap-x-2">
+                    {gameContext.benchBag.map((champion, id) => {
+                        return champion ? <ChampionHex key={`bench_champion_hex_${id}`} champion={champion} currentPosition="id" /> : null
+                    })}
                 </div>
             </div>
         </div>

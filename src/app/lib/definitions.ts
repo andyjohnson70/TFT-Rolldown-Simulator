@@ -32,12 +32,14 @@ export type GameContextType = {
     setBoardBag: React.Dispatch<React.SetStateAction<(Champion|undefined)[][]>>,
     level: number,
     setLevel: React.Dispatch<React.SetStateAction<number>>,
-    totalXP: number,
-    setTotalXP: React.Dispatch<React.SetStateAction<number>>,
+    xp: number,
+    setXP: React.Dispatch<React.SetStateAction<number>>,
     gold: number,
     setGold: React.Dispatch<React.SetStateAction<number>>,
     gameActive: boolean,
     setGameActive: React.Dispatch<React.SetStateAction<boolean>>,
+    gameEnded: boolean,
+    setGameEnded: React.Dispatch<React.SetStateAction<boolean>>,
     time: number,
     setTime: React.Dispatch<React.SetStateAction<number>>,
     xpKeybind: string,
@@ -65,6 +67,16 @@ export enum BagSize {
     Tier4 = 10,
     Tier5 = 9
 }
+
+export const XP_NEEDED: number[] = [2,  //2 -> 3
+                                    6,  //3 -> 4
+                                    10, //4 -> 5
+                                    20, //5 -> 6
+                                    36, //6 -> 7
+                                    48, //7 -> 8
+                                    72, //8 -> 9
+                                    84] //9 -> 10
+                                    
 
 export const SHOP_ODDS: number[][] = [[100, 0, 0, 0, 0],  //Level 2
                                         [75, 25, 0, 0, 0], //Level 3

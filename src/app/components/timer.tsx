@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { GameContext } from "../context/context";
-import { ResetGameState } from "../scripts/actions";
+import { EndGame } from "../scripts/actions";
 
 
 export function Timer() {

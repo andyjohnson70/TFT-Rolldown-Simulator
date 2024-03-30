@@ -1,6 +1,6 @@
 import { Active, Over } from "@dnd-kit/core";
 import { ChampionCardProps } from "../components/champion";
-import { BagSize, Champion, ChampionBag, ChampionDataModel, GameContextType, SHOP_ODDS } from "../lib/definitions";
+import { BagSize, Champion, ChampionBag, ChampionDataModel, GameContextType, SHOP_ODDS, XP_NEEDED } from "../lib/definitions";
 
 export function InitializeChampionBag(championsList?: ChampionDataModel[]) : ChampionBag {
     let championBag: ChampionBag = {
@@ -414,6 +414,24 @@ function IdenityPosition(position : string, boardBag : (Champion|undefined)[][],
     return positionResident;
 }
 
+export function BuyXP(level: number, xp: number, gold: number) : { newLevel: number, newXP: number, newGold: number} {
+    const xpNeededToLevel = XP_NEEDED[level - 2];
+    const newGold = gold - 4;
+    let newXP = xp + 4;
+    let newLevel = level;
+
+    if(newXP >= xpNeededToLevel) {
+        newLevel++;
+        newXP -= xpNeededToLevel;
+    }
+
+    return {
+        newLevel: newLevel,
+        newXP: newXP,
+        newGold: newGold,
+    };
+}
+
 export function FetchShopBag(championBag : ChampionBag|undefined, shopBag : (Champion|undefined)[], level : number) : { newChampionBag : ChampionBag|undefined , newShopBag : Champion[] } {
     const shopOdds: number[] = SHOP_ODDS[level - 2];
     const currentShopTiers: number[] = [];
@@ -524,7 +542,7 @@ export function FetchShopBag(championBag : ChampionBag|undefined, shopBag : (Cha
 }
 
 
-export function ResetGameState(gameContext : GameContextType) {
+export function EndGame(gameContext : GameContextType) {
     gameContext.setBenchBag(Array(9).fill(undefined));
     gameContext.setBoardBag(Array.from(Array(4), () => new Array(7).fill(undefined)));
     gameContext.setShopBag(Array(5).fill(undefined));
@@ -534,5 +552,6 @@ export function ResetGameState(gameContext : GameContextType) {
     const newChampionBag = InitializeChampionBag(gameContext.initialChampionList);
     gameContext.setChampionBag(newChampionBag);
     gameContext.setGameActive(false);
+    gameContext.setGameEnded(true);
     return;
 }

@@ -1,5 +1,5 @@
 "use client";
-import { FetchShopBag, InitializeChampionBag, MoveChampion, SellChampion } from "./scripts/actions";
+import { BuyXP, FetchShopBag, InitializeChampionBag, MoveChampion, SellChampion } from "./scripts/actions";
 import { RerollButton, XpButton } from "./components/buttons";
 import { Shop } from "./components/shop";
 import { GameContext } from "./context/context";
@@ -12,6 +12,7 @@ import { DndContext, DragEndEvent, Over } from "@dnd-kit/core";
 import GameMenu from "./components/gamemenu";
 import { Timer } from "./components/timer";
 import useSound from "use-sound";
+import Dashboard from "./components/dashboard";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -24,9 +25,10 @@ export default function Home() {
   const [shopBag, setShopBag] = useState<(Champion|undefined)[]>(Array(5).fill(undefined));
   const [benchBag, setBenchBag] = useState<(Champion|undefined)[]>(Array(9).fill(undefined));
   const [boardBag, setBoardBag] = useState<(Champion|undefined)[][]>(Array.from(Array(4), () => new Array(7).fill(undefined)));
-  const [totalXP, setTotalXP] = useState<number>(74);
+  const [xp, setXP] = useState<number>(0);
   const [gold, setGold] = useState<number>(50); 
   const [gameActive, setGameActive] = useState<boolean>(false);
+  const [gameEnded, setGameEnded] = useState<boolean>(false);
   const [time, setTime] = useState<number>(50);
   const [xpKeybind, setXPKeybind] = useState<string>("f");
   const [rerollKeybind, setRerollKeybind] = useState<string>("d");
@@ -34,6 +36,7 @@ export default function Home() {
   const [arenaUrl, setArenaUrl] = useState<string>("public/arenas/Arena.jpg");
   const [rerollSFX] = useSound("/sounds/reroll.mp3");
   const [sellSFX] = useSound("/sounds/sell.mp3");
+  const [xpSFX] = useSound("/sounds/xp.mp3");
 
   if (undefined === initialChampionList && data) {
     setInitialChampionList(data);
@@ -45,9 +48,9 @@ export default function Home() {
   }
 
   function handleKeydownEvent(event: KeyboardEvent) {
-    if(!gameActive) return
+    if(gameActive) return
     
-    if(event.key === rerollKeybind) {
+    if(event.key === rerollKeybind  && gold >= 2) {
         const { newChampionBag, newShopBag } = FetchShopBag(championBag, shopBag, level);
         rerollSFX();
         setChampionBag(newChampionBag);
@@ -55,8 +58,12 @@ export default function Home() {
         setGold(gold.valueOf() - 2);
     }
 
-    if(event.key === xpKeybind) {
-
+    if(event.key === xpKeybind && gold >= 4 && level < 10) {
+      const { newLevel, newXP, newGold } = BuyXP(level, xp, gold);
+      xpSFX();
+      setLevel(newLevel);
+      setXP(newXP);
+      setGold(newGold);
     }
   }
 
@@ -95,9 +102,10 @@ export default function Home() {
       shopBag, setShopBag,
       benchBag, setBenchBag,
       boardBag, setBoardBag,
-      totalXP, setTotalXP,
+      xp: xp, setXP: setXP,
       gold, setGold,
       gameActive, setGameActive,
+      gameEnded, setGameEnded,
       time, setTime,
       xpKeybind, setXPKeybind,
       rerollKeybind, setRerollKeybind,
@@ -106,7 +114,7 @@ export default function Home() {
     }}>
       <DndContext autoScroll={false} onDragEnd={handleDragEnd}>          
         <main className="flex min-h-screen flex-col items-center overflow-hidden">
-          { !gameActive ? <GameMenu /> : null}
+          { gameActive ? <GameMenu /> : null}
           <div className="flex flex-col grow items-center w-full">
             <div>
               <Timer />
@@ -125,16 +133,16 @@ export default function Home() {
           </div>
 
           <div className="flex items-center flex-col h-48 w-full">
-            <div className="dashboard bg-slate-300 opacity-25 h-1/5 w-full xl:w-8/12">
-            
+            <div className="dashboard h-1/5 w-full xl:w-8/12">
+              <Dashboard />
             </div>
       
-            <div className="flex h-4/5 w-full xl:w-8/12">
-              <div className="flex flex-col bg-slate-700 w-1/5">
+            <div className="flex h-4/5 w-full xl:w-8/12 border-[#785a28] border-x-2 border-t-2">
+              <div className="flex flex-col justify-center bg-[#262d39] w-1/5">
                 <XpButton />
                 <RerollButton />
               </div>
-              <div className="bg-slate-800 w-4/5">
+              <div className="bg-[#152023] w-4/5">
                 <Shop />
               </div>
               

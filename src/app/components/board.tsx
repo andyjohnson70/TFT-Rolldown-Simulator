@@ -19,7 +19,7 @@ export default function Board() {
     const gameContext = useContext(GameContext);
     return (
         <div className="z-10">
-            <div className="text-white champion-text text-4xl flex content-end justify-end">
+            <div className="text-white border-text text-4xl flex content-end justify-end">
                 {gameContext.boardBag.reduce((item, row) => {
                     return item + row.reduce((innerItem, index) => innerItem + (index !== undefined ? 1 : 0), 0)
                 }, 0)} / {gameContext.level}
