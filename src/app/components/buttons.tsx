@@ -22,7 +22,7 @@ export function XpButton() {
     }
 
     return (
-        <div className="bg-sky-600 grow flex flex-col justify-center m-2" onClick={buyXP}>
+        <div className="bg-[#263b4b] grow flex flex-col justify-center m-2" onClick={buyXP}>
             <div className="flex flex-col pl-3">
                 <div className=" text-white text-lg font-bold">Buy XP</div>
                 <div className="flex flex-row">
@@ -55,7 +55,7 @@ export function RerollButton() {
     }
 
     return (
-        <div className="bg-yellow-400 grow flex flex-col justify-center mx-2 mb-2" onClick={rerollShop}>
+        <div className="bg-[#453f29] grow flex flex-col justify-center mx-2 mb-2" onClick={rerollShop}>
             <div className="flex flex-col pl-3">
                 <div className=" text-white text-lg font-bold">Reroll</div>
                 <div className="flex flex-row">
