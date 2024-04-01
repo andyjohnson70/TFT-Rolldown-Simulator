@@ -12,14 +12,14 @@ export function Shop() {
     });
 
     const style : CSSProperties = {
-        outline: isOver ? 'solid 2px rgb(8 145 178)' : undefined,
-        outlineOffset: isOver ? "-2px" : undefined
+        outline: isOver && active && !active.id.toString().includes('card_') ? 'solid 2px rgb(8 145 178)' : undefined,
+        outlineOffset: isOver && active && !active.id.toString().includes('card_') ? "-2px" : undefined
     };
 
     return(
-        <div className="shop flex justify-between h-full">
-            {active ?
-            <div style={style} ref={setNodeRef} className="text-4xl text-white text-center content-evenly w-full">Sell for {active.data.current?.tier}g</div>:
+        <div style={style} ref={setNodeRef} className="shop flex justify-between h-full">
+            {active && !active.id.toString().includes('card_') ?
+            <div className="text-4xl text-white text-center content-evenly w-full">Sell for {active.data.current?.tier}g</div>:
             gameContext.shopBag.map((champion, id) => {
                 return <ChampionCard champion={champion} shopIndex={id} key={`shop_champion_${id}`} />
             })}

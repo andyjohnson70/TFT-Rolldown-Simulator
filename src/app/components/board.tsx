@@ -53,12 +53,12 @@ function HexRow(props : HexRowProps) {
 }
 
 function Hex(props : HexProps) {
-    const {isOver, setNodeRef} = useDroppable({
+    const {active, isOver, setNodeRef} = useDroppable({
         id: `${props.id}`
     });
 
     const style : CSSProperties = {
-        backgroundColor: isOver ? 'rgba(255, 255, 255, 0.25)' : undefined,
+        backgroundColor: isOver && active && !active.id.toString().includes('card_') ? 'rgba(255, 255, 255, 0.25)' : undefined,
     }
     
     return (

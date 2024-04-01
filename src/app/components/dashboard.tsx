@@ -31,7 +31,12 @@ function Level() {
 
 function ShopPercentage() {
     const gameContext = useContext(GameContext);
-    const percentages: number[] = SHOP_ODDS[gameContext.level - 2]
+    if(gameContext.level < 2) {
+        gameContext.setLevel(2);
+    } else if(gameContext.level > 10) {
+        gameContext.setLevel(10);
+    }
+    const percentages: number[] = SHOP_ODDS[Math.min(10, Math.max(2, gameContext.level)) - 2]
     return(
         <div className="flex flex-row place-self-end bg-[#101512] h-[70%]">
             {percentages.map((odds, id) => {

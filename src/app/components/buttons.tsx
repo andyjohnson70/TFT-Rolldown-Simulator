@@ -47,7 +47,7 @@ export function RerollButton() {
         if (!gameContext.gameActive || gameContext.gold < 2) {
             return
         }
-        const { newChampionBag, newShopBag } = FetchShopBag(gameContext.championBag, gameContext.shopBag, gameContext.level);
+        const { newChampionBag, newShopBag } = FetchShopBag(gameContext.championBag, gameContext.boardBag, gameContext.benchBag, gameContext.shopBag, gameContext.level);
         rerollSFX();
         gameContext.setChampionBag(newChampionBag);
         gameContext.setShopBag(newShopBag);

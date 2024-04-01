@@ -1,5 +1,5 @@
 "use client";
-import { BuyXP, FetchShopBag, InitializeChampionBag, MoveChampion, SellChampion } from "./scripts/actions";
+import { BuyXP, FetchShopBag, InitializeChampionBag, MoveChampion, PurchaseChampion, SellChampion } from "./scripts/actions";
 import { RerollButton, XpButton } from "./components/buttons";
 import { Shop } from "./components/shop";
 import { GameContext } from "./context/context";
@@ -8,7 +8,7 @@ import useSWRImmutable from "swr/immutable";
 import Board from "./components/board";
 import Bench from "./components/bench";
 import { useEffect, useState } from "react";
-import { DndContext, DragEndEvent, Over } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, MouseSensor, Over, useSensor, useSensors } from "@dnd-kit/core";
 import GameMenu from "./components/gamemenu";
 import { Timer } from "./components/timer";
 import useSound from "use-sound";
@@ -38,6 +38,8 @@ export default function Home() {
   const [rerollSFX] = useSound("/sounds/reroll.mp3");
   const [sellSFX] = useSound("/sounds/sell.mp3");
   const [xpSFX] = useSound("/sounds/xp.mp3");
+  const [purchaseSFX] = useSound("/sounds/purchase.mp3");
+  const [levelUpSFX] = useSound("/sounds/levelup.mp3");
 
   if (undefined === initialChampionList && data) {
     setInitialChampionList(data);
@@ -52,7 +54,7 @@ export default function Home() {
     if(!gameActive) return
     
     if(event.key === rerollKeybind  && gold >= 2) {
-        const { newChampionBag, newShopBag } = FetchShopBag(championBag, shopBag, level);
+        const { newChampionBag, newShopBag } = FetchShopBag(championBag, boardBag, benchBag, shopBag, level);
         rerollSFX();
         setChampionBag(newChampionBag);
         setShopBag(newShopBag);
@@ -71,7 +73,26 @@ export default function Home() {
   function handleDragEnd(event: DragEndEvent) {
     const {active, over} = event;
 
-    if(over && over.id === 'shop') {
+    if(active && active.id.toString().includes('card_') && ((over && over.id !== 'shop') || !over)) {
+      if((!active.data.current) || 
+        (!benchBag.some((slot) => slot === undefined) && 
+        benchBag.filter(champion => champion && active.data.current && champion.name === active.data.current.props.champion?.name && champion.starlevel === 1).length < 2)) {
+        return;
+      }
+
+      const {newBoardBag, newBenchBag, newShopBag, newGold, levelUpChampion} = PurchaseChampion(boardBag, benchBag, shopBag, gold, active.data.current.props);
+        purchaseSFX();
+        if(levelUpChampion) {
+            levelUpSFX();
+        }
+        setBoardBag(newBoardBag);
+        setBenchBag(newBenchBag);
+        setShopBag(newShopBag);
+        setGold(newGold);
+        return;
+    }
+
+    if(over && over.id === 'shop' && active && !active.id.toString().includes('card_')) {
       const { newBoardBag, newBenchBag, newChampionBag, newGold } = SellChampion(boardBag, benchBag, championBag, gold, active, over);
       sellSFX();
       //If bench bags are not equal to each other the unit sold was from the bench
@@ -82,11 +103,13 @@ export default function Home() {
       }
       setChampionBag(newChampionBag);
       setGold(newGold);
+      return;
     } 
-    else if (over && over.id) {
+    else if (over && over.id && active && !active.id.toString().includes('card_')) {
       const { newBoardBag, newBenchBag } = MoveChampion(boardBag, benchBag, active, over, level);
       setBoardBag(newBoardBag);
       setBenchBag(newBenchBag);
+      return;
     }
   }
 
@@ -94,7 +117,16 @@ export default function Home() {
     window.addEventListener('keydown', handleKeydownEvent)
     return () => window.removeEventListener('keydown', handleKeydownEvent)
   })
-  
+
+  const mouseSensor = useSensor(MouseSensor, {
+    // Require the mouse to move by 10 pixels before activating
+    activationConstraint: {
+      distance: 10,
+    },
+  });
+  const sensors = useSensors(
+    mouseSensor
+  );
   return (
     <GameContext.Provider value={{
       initialChampionList, setInitialChampionList,
@@ -113,7 +145,7 @@ export default function Home() {
       sellKeybind, setSellKeybind,
       arenaUrl, setArenaUrl
     }}>
-      <DndContext autoScroll={false} onDragEnd={handleDragEnd}>          
+      <DndContext autoScroll={false} onDragEnd={handleDragEnd} sensors={sensors}>          
         <main className="flex min-h-screen flex-col items-center overflow-hidden">
           { !gameActive ? <GameMenu /> : null}
           <div className="flex flex-col grow items-center w-full">

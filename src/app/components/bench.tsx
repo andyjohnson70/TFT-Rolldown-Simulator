@@ -3,6 +3,7 @@ import { Champion } from "../lib/definitions";
 import { GameContext } from "../context/context";
 import { ChampionHex } from "./champion";
 import { useDroppable } from "@dnd-kit/core";
+import React from "react";
 
 interface BenchSlotProps {
     champion?: Champion,
@@ -22,12 +23,12 @@ export default function Bench() {
 }
 
 function BenchSlot(props: BenchSlotProps) {
-    const {isOver, setNodeRef} = useDroppable({
+    const {active, isOver, setNodeRef} = useDroppable({
         id: `${props.index}`
     });
 
     const style : CSSProperties = {
-        background: isOver ? 'rgba(255, 255, 255, 0.25)' : undefined
+        background: isOver&& active && !active.id.toString().includes('card_') ? 'rgba(255, 255, 255, 0.25)' : undefined
     };
 
     return (

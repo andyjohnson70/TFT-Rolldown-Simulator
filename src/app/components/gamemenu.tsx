@@ -47,7 +47,7 @@ export default function GameMenu() {
         gameContext.setBoardBag(Array.from(Array(4), () => new Array(7).fill(undefined)));
         const initialChampionBag = InitializeChampionBag(gameContext.initialChampionList);
         gameContext.setChampionBag(initialChampionBag);
-        const { newChampionBag, newShopBag } = FetchShopBag(gameContext.championBag, gameContext.shopBag, gameContext.level);
+        const { newChampionBag, newShopBag } = FetchShopBag(gameContext.championBag, gameContext.boardBag, gameContext.benchBag, gameContext.shopBag, gameContext.level);
         gameContext.setShopBag(newShopBag);
         gameContext.setChampionBag(newChampionBag);
         gameContext.setGameEnded(false);
@@ -57,9 +57,9 @@ export default function GameMenu() {
 
     return (
         <div id="gameMenu" className="fixed z-50 left-0 top-0 w-full h-full bg-slate-900 bg-opacity-75">
-            <div className="gameMenuModal bg-[#010a13] border-[#785a28] border-2 opacity-100 fixed flex inset-x-0 mt-10 m-auto z-11 w-3/4 h-3/4">
-                <div className="left-section border-r-[#785a28] border-r-2 flex flex-col h-full w-1/2 xl:w-4/12">
-                    <div className="mx-auto text-[#efe5d1] text-4xl p-3 xl:pb-12">
+            <div className="gameMenuModal bg-[#010a13] border-[#785a28] border-2 opacity-100 fixed flex flex-row inset-x-0 mt-10 m-auto z-11 w-3/4 h-3/4">
+                <div className="left-section border-r-[#785a28] border-r-2 flex flex-col h-full w-full xl:w-6/12">
+                    <div className="text-[#efe5d1] text-4xl p-3 xl:pb-12">
                         Game Options
                     </div>
                     <div className="flex flex-col h-full gap-y-4">
@@ -74,14 +74,14 @@ export default function GameMenu() {
                             <label className="option-labe text-[#ccbd91] text-2xl">
                                 Gold:
                             </label>
-                            <input id="gold" type="number" min="0" className="input text-center rounded-lg border-[#715527] border-2 max-w-[40px]" onChange={e => gameContext.setGold(Number(e.target.value))} value={gold}></input>
+                            <input id="gold" type="number" min="0" className="input text-center rounded-lg border-[#715527] border-2 max-w-[60px]" onChange={e => gameContext.setGold(Number(e.target.value))} value={gold}></input>
                         </div>
 
                         <div className="option-row flex justify-between p-3">
                             <label className="option-label text-[#ccbd91] text-2xl">
                                 Time:
                             </label>
-                            <input id="time" type="number" min="1" className="input text-center rounded-lg border-[#715527] border-2 max-w-[40px]" onChange={e => gameContext.setTime(Number(e.target.value))} value={time}></input>
+                            <input id="time" type="number" min="1" className="input text-center rounded-lg border-[#715527] border-2 max-w-[60px]" onChange={e => gameContext.setTime(Number(e.target.value))} value={time}></input>
                         </div>
 
                         <div className="option-row flex justify-between p-3">
@@ -106,7 +106,7 @@ export default function GameMenu() {
                     </div>
                 </div>
                 
-                <div className="flex flex-col h-full grow">
+                <div className="flex flex-col h-full">
                     {!gameContext.gameEnded ?
                         <Overview /> :
                         <GameSummary />

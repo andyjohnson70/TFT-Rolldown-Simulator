@@ -2,7 +2,7 @@ import { Champion } from "../lib/definitions";
 import { CSSProperties, useContext } from "react";
 import { GameContext } from "../context/context";
 import { PurchaseChampion } from "../scripts/actions";
-import { useDraggable } from "@dnd-kit/core";
+import { MouseSensor, useDraggable, useSensor } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities"
 import Image from "next/image";
 import useSound from 'use-sound';
@@ -23,20 +23,44 @@ interface TraitItemProps {
 }
 
 export function ChampionCard(props: ChampionCardProps) {
+    const gameContext = useContext(GameContext);
     const [purchaseSFX] = useSound("/sounds/purchase.mp3");
     const [levelUpSFX] = useSound("/sounds/levelup.mp3");
 
-    const gameContext = useContext(GameContext);
+    const {isDragging, attributes, listeners, setNodeRef, transform, over} = useDraggable({
+        id: props.champion ? `card_${props.champion.id}` : '',
+        data: {
+            props: props,
+        },
+        disabled: !gameContext.gameActive
+    });
+
+    const style : CSSProperties = {
+        transform: CSS.Translate.toString(transform),
+        zIndex: isDragging ? 1000 : 1
+    };
+
     const purchaseChampion = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.preventDefault();
+
         if(props.champion && (!gameContext.gameActive || gameContext.gold < props.champion?.tier)) {
             return;
         }
-        e.preventDefault();
-        //If bench has no space, then you cannot purchase a champion
-        if(!gameContext.benchBag.some((slot) => slot === undefined) && gameContext.benchBag.filter(champion => champion && champion.name === props.champion?.name && champion.starlevel === 1).length < 2) {
-            return;
+
+        // This is gross but shop logic is very tricky
+        if(!gameContext.benchBag.some((slot) => slot === undefined) &&
+        gameContext.benchBag.filter(champion => champion && champion.name === props.champion?.name && champion.starlevel === 1).length < 2) {
+
+            if(!gameContext.benchBag.some((slot) => slot === undefined) &&
+            !(gameContext.benchBag.filter(champion => champion && champion.name === props.champion?.name && champion.starlevel === 1).length === 1 &&
+            gameContext.shopBag.filter(champion => champion && champion.name === props.champion?.name).length >= 2)) {
+                return;
+            }
         }
-        const {newBoardBag, newBenchBag, newShopBag, newGold, levelUpChampion} = PurchaseChampion(gameContext, props);
+
+        
+
+        const {newBoardBag, newBenchBag, newShopBag, newGold, levelUpChampion} = PurchaseChampion(gameContext.boardBag, gameContext.benchBag, gameContext.shopBag, gameContext.gold, props);
         purchaseSFX();
         if(levelUpChampion) {
             levelUpSFX();
@@ -49,7 +73,7 @@ export function ChampionCard(props: ChampionCardProps) {
 
     return (
         undefined != props.champion ?
-        <div className="champion-card w-1/5 m-2" onClick={purchaseChampion}>
+        <div className="champion-card w-1/5 m-2" onClick={purchaseChampion} ref={setNodeRef} {...listeners} {...attributes} style={style}>
             <div className={`bg-center relative bg-no-repeat bg-cover h-4/5 tier-${props.champion.tier}-border`} style={{
                 backgroundImage: `url(${props.champion.imageurl})`,
             }}>
@@ -98,12 +122,14 @@ function TraitItem(props: TraitItemProps) {
 }
 
 export function ChampionHex(props: ChampionHexProps) {
+    const gameContext = useContext(GameContext);
     const {isDragging, attributes, listeners, setNodeRef, transform, over} = useDraggable({
         id: `${props.champion.id}`,
         data: {
             tier: props.champion.tier,
             currentPosition: props.currentPosition,
-        }
+        },
+        disabled: !gameContext.gameActive
     });
 
     const hexStyle : CSSProperties = {
