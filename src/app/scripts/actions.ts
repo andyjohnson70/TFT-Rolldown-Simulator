@@ -122,7 +122,18 @@ export function PurchaseChampion(boardBag : (Champion|undefined)[][], benchBag :
         champion.starlevel === 1
     ).length === 2;
 
-    if(levelTwoCheck) {
+    const levelTwoCheckFromShop: boolean = allPlayerChampions.filter(champion => 
+        champion &&
+        champion.name === championToPurchase.name &&
+        champion.starlevel === 1
+    ).length === 1 &&
+    newShopBag.filter(champion => 
+        champion &&
+        champion.name === championToPurchase.name
+    ).length === 2 &&
+    !newBenchBag.some(slot => slot === undefined);
+
+    if(levelTwoCheck || levelTwoCheckFromShop) {
         levelUpChampion = true;
         let tempChamp : Champion|undefined = undefined;
         newBoardBag.forEach((row, i) => {
@@ -160,10 +171,10 @@ export function PurchaseChampion(boardBag : (Champion|undefined)[][], benchBag :
                 newBenchBag[i] = undefined;
             }
         });
-    } 
+    }
 
     // Check if creating a two star was enough to start a three star champion
-    if(levelTwoCheck) {
+    if(levelUpChampion) {
         flatBoardBag = newBoardBag.flat();
         allPlayerChampions = [...flatBoardBag, ...newBenchBag];
         const levelThreeCheck: boolean = allPlayerChampions.filter(champion => 
@@ -222,7 +233,17 @@ export function PurchaseChampion(boardBag : (Champion|undefined)[][], benchBag :
         }
     }
 
-    newShopBag[shopIndex] = undefined;
+    if(levelTwoCheckFromShop) {
+        let shopChampionsForLevelUp: number = 0;
+        for (let i = 0; i < newShopBag.length; i++) {
+            if(newShopBag[i] && newShopBag[i]?.name === championToPurchase.name && shopChampionsForLevelUp < 2) {
+                newShopBag[i] = undefined;
+                shopChampionsForLevelUp++;
+            }
+        }
+    } else {
+        newShopBag[shopIndex] = undefined;
+    }
     const newGold = gold - championToPurchase.tier;
 
     return {
