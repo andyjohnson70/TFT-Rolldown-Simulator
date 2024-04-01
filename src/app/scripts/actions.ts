@@ -89,7 +89,6 @@ export function InitializeChampionBag(championsList?: ChampionDataModel[]) : Cha
                 break;
         }
     });
-    console.log("champion bag:", championBag);
     return championBag;
 }
 

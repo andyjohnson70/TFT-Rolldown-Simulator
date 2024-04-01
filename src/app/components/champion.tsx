@@ -58,8 +58,6 @@ export function ChampionCard(props: ChampionCardProps) {
             }
         }
 
-        
-
         const {newBoardBag, newBenchBag, newShopBag, newGold, levelUpChampion} = PurchaseChampion(gameContext.boardBag, gameContext.benchBag, gameContext.shopBag, gameContext.gold, props);
         purchaseSFX();
         if(levelUpChampion) {
