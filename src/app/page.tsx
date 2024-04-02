@@ -13,6 +13,8 @@ import GameMenu from "./components/gamemenu";
 import { Timer } from "./components/timer";
 import useSound from "use-sound";
 import Dashboard from "./components/dashboard";
+import { inject } from "@vercel/analytics";
+import { injectSpeedInsights } from '@vercel/speed-insights';
 import React from "react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -40,6 +42,9 @@ export default function Home() {
   const [xpSFX] = useSound("/sounds/xp.mp3");
   const [purchaseSFX] = useSound("/sounds/purchase.mp3");
   const [levelUpSFX] = useSound("/sounds/levelup.mp3");
+  injectSpeedInsights();
+  inject();
+  
 
   if (undefined === initialChampionList && data) {
     setInitialChampionList(data);
@@ -68,6 +73,10 @@ export default function Home() {
       setXP(newXP);
       setGold(newGold);
     }
+
+    if(event.key === sellKeybind) {
+
+    }
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -76,7 +85,8 @@ export default function Home() {
     if(active && active.id.toString().includes('card_') && ((over && over.id !== 'shop') || !over)) {
       if((!active.data.current) || 
         (!benchBag.some((slot) => slot === undefined) && 
-        benchBag.filter(champion => champion && active.data.current && champion.name === active.data.current.props.champion?.name && champion.starlevel === 1).length < 2)) {
+        benchBag.filter(champion => champion && active.data.current && champion.name === active.data.current.props.champion?.name && champion.starlevel === 1).length < 2) ||
+        gold < active.data.current.props.champion?.tier) {
         return;
       }
 
@@ -93,7 +103,10 @@ export default function Home() {
     }
 
     if(over && over.id === 'shop' && active && !active.id.toString().includes('card_')) {
-      const { newBoardBag, newBenchBag, newChampionBag, newGold } = SellChampion(boardBag, benchBag, championBag, gold, active, over);
+      if(!active.data.current || !active.data.current.currentPosition) {
+        return;
+      }
+      const { newBoardBag, newBenchBag, newChampionBag, newGold } = SellChampion(boardBag, benchBag, championBag, gold, active.data.current.currentPosition);
       sellSFX();
       //If bench bags are not equal to each other the unit sold was from the bench
       if(JSON.stringify(newBenchBag) !== JSON.stringify(benchBag)) {

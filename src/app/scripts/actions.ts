@@ -317,8 +317,12 @@ export function MoveChampion(boardBag : (Champion|undefined)[][], benchBag : (Ch
 }
  
 
-export function SellChampion(boardBag : (Champion|undefined)[][], benchBag : (Champion|undefined)[], championBag: ChampionBag|undefined, gold : number, active : Active, over : Over) : { newBoardBag : (Champion|undefined)[][], newBenchBag : (Champion|undefined)[], newChampionBag : ChampionBag|undefined, newGold : number} {
-    if(!active.data.current || !over || !championBag) {
+export function SellChampion(boardBag : (Champion|undefined)[][], benchBag : (Champion|undefined)[], championBag: ChampionBag|undefined, gold : number, currentPosition : string) : { newBoardBag : (Champion|undefined)[][], newBenchBag : (Champion|undefined)[], newChampionBag : ChampionBag|undefined, newGold : number} {
+    const newBoardBag : (Champion|undefined)[][] = [...boardBag];
+    const newBenchBag : (Champion|undefined)[] = [...benchBag];
+    let tempChamp : Champion|undefined = IdenityPosition(currentPosition, newBoardBag, newBenchBag);
+
+    if(!tempChamp || !championBag) {
         return {
             newBoardBag: boardBag,
             newBenchBag: benchBag,
@@ -326,13 +330,6 @@ export function SellChampion(boardBag : (Champion|undefined)[][], benchBag : (Ch
             newGold: gold
         };
     }
-
-    const currentPosition = active.data.current.currentPosition;
-    const championTier = active.data.current.tier;
-    
-    const newBoardBag : (Champion|undefined)[][] = [...boardBag];
-    const newBenchBag : (Champion|undefined)[] = [...benchBag];
-    let tempChamp : Champion|undefined = IdenityPosition(currentPosition, newBoardBag, newBenchBag);
 
     // If ChampionHex currrentPosition contians a '-' then it is being sold from the board
     if(currentPosition.includes("-")) {
@@ -349,7 +346,7 @@ export function SellChampion(boardBag : (Champion|undefined)[][], benchBag : (Ch
 
     let championsToAddBack : Champion[] = []
 
-    switch(tempChamp?.starlevel) {
+    switch(tempChamp.starlevel) {
         case 1:
             championsToAddBack.push(tempChamp);
             break;
@@ -386,7 +383,7 @@ export function SellChampion(boardBag : (Champion|undefined)[][], benchBag : (Ch
     }
 
     //Return champion to game bag
-    switch(tempChamp?.tier) {
+    switch(tempChamp.tier) {
         case 1:
             championsToAddBack.forEach(champion => championBag.Tier1Units.push(champion));
             break;
@@ -404,7 +401,7 @@ export function SellChampion(boardBag : (Champion|undefined)[][], benchBag : (Ch
             break;
     }
 
-    const newGold = gold + championTier;
+    const newGold = gold + tempChamp.tier;
     return {
         newBoardBag: newBoardBag,
         newBenchBag: newBenchBag,

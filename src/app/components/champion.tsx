@@ -1,8 +1,8 @@
 import { Champion } from "../lib/definitions";
-import { CSSProperties, useContext } from "react";
+import { CSSProperties, useContext, useEffect, useState } from "react";
 import { GameContext } from "../context/context";
-import { PurchaseChampion } from "../scripts/actions";
-import { MouseSensor, useDraggable, useSensor } from "@dnd-kit/core";
+import { PurchaseChampion, SellChampion } from "../scripts/actions";
+import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities"
 import Image from "next/image";
 import useSound from 'use-sound';
@@ -121,6 +121,8 @@ function TraitItem(props: TraitItemProps) {
 
 export function ChampionHex(props: ChampionHexProps) {
     const gameContext = useContext(GameContext);
+    const [hovered, setHovered] = useState(false)
+    const [sellSFX] = useSound("/sounds/sell.mp3");
     const {isDragging, attributes, listeners, setNodeRef, transform, over} = useDraggable({
         id: `${props.champion.id}`,
         data: {
@@ -139,8 +141,41 @@ export function ChampionHex(props: ChampionHexProps) {
         backgroundImage: `url(${props.champion.imageurl})`,
     };
 
+    const handleKeydownEvent = (event: KeyboardEvent) => {
+        if (!props.champion || !gameContext.gameActive || !hovered) return
+
+        if (event.key === gameContext.sellKeybind) {
+            const { newBoardBag, newBenchBag, newChampionBag, newGold } = SellChampion(gameContext.boardBag, gameContext.benchBag, gameContext.championBag, gameContext.gold, props.currentPosition);
+            sellSFX();
+            //If bench bags are not equal to each other the unit sold was from the bench
+            if(JSON.stringify(newBenchBag) !== JSON.stringify(gameContext.benchBag)) {
+                gameContext.setBenchBag(newBenchBag);
+            } else {
+                gameContext.setBoardBag(newBoardBag);
+            }
+            gameContext.setChampionBag(newChampionBag);
+            gameContext.setGold(newGold);
+            return;
+        }
+    }
+
+    const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.preventDefault()
+        setHovered(true)
+    }
+
+    const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.preventDefault()
+        setHovered(false)
+    }
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeydownEvent)
+        return () => window.removeEventListener('keydown', handleKeydownEvent)
+      })
+
     return (
-        <div ref={setNodeRef} {...listeners} {...attributes} style={hexStyle} className="relative">
+        <div ref={setNodeRef} {...listeners} {...attributes} style={hexStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} className="relative">
             <div className="absolute inset-x-0 top-0 flex flex-row justify-center">
                 <div className="flex z-10">
                     {props.champion.origins.map((origin, id) => {

@@ -98,6 +98,13 @@ export default function GameMenu() {
                             <input id="xpKeybind" type="text" maxLength={1} className="input text-center rounded-lg border-[#715527] border-2 max-w-[40px]" onChange={e => gameContext.setXPKeybind(e.target.value)} value={gameContext.xpKeybind}></input>
                         </div>
 
+                        <div className="option-row flex justify-between p-3">
+                        <label className="option-label text-[#ccbd91] text-2xl">
+                                Sell Unit Keybind:
+                            </label>
+                            <input id="xpKeybind" type="text" maxLength={1} className="input text-center rounded-lg border-[#715527] border-2 max-w-[40px]" onChange={e => gameContext.setSellKeybind(e.target.value)} value={gameContext.sellKeybind}></input>
+                        </div>
+
                         <div className="option-row flex mt-auto justify-between pb-8">
                             <button className="bg-[#1e2328] border-[#c8aa6d] border-2 text-[#ccbd91] w-6/12 mx-auto" onClick={handleGameStart}>
                                 Start
