@@ -159,54 +159,55 @@ export default function Home() {
       sellKeybind, setSellKeybind,
       arenaUrl, setArenaUrl
     }}>
-      <DndContext autoScroll={false} onDragEnd={handleDragEnd} sensors={sensors}>          
-        <main className="flex min-h-screen flex-col items-center overflow-hidden">
-          <BrowserView>
-            { !gameActive ? <GameMenu /> : null}
-            <div className="flex flex-col grow items-center w-full">
-              <div>
-                <Timer />
-              </div>
-              <div className="active-traits">
-
-              </div>
-
-              <div className="grow content-end pb-8">
-                <Board/>
-              </div>
-
-              <div className="flex justify-center w-full min-h-min">
-                <Bench />
-              </div>
-            </div>
-
-            <div className="flex items-center flex-col h-48 w-full">
-              <div className="dashboard h-1/5 w-full xl:w-8/12">
-                <Dashboard />
-              </div>
-        
-              <div className="flex h-4/5 w-full xl:w-8/12 border-[#785a28] border-x-2 border-t-2">
-                <div className="flex flex-col justify-center bg-[#262d39] w-1/5">
-                  <XpButton />
-                  <RerollButton />
+      <BrowserView>
+        <DndContext autoScroll={false} onDragEnd={handleDragEnd} sensors={sensors}>          
+          <main className="flex min-h-screen flex-col items-center overflow-hidden">
+              { !gameActive ? <GameMenu /> : null}
+              <div className="flex flex-col grow items-center w-full">
+                <div>
+                  <Timer />
                 </div>
-                <div className="bg-[#152023] w-4/5">
-                  <Shop />
+                <div className="active-traits">
+
                 </div>
-                
+
+                <div className="grow content-end pb-8">
+                  <Board/>
+                </div>
+
+                <div className="flex justify-center w-full min-h-min">
+                  <Bench />
+                </div>
               </div>
-            </div>
-          </BrowserView>
+
+              <div className="flex items-center flex-col h-48 w-full">
+                <div className="dashboard h-1/5 w-full xl:w-8/12">
+                  <Dashboard />
+                </div>
           
-        <MobileView>
-          <div className="fixed z-50 left-0 top-0 w-full h-full bg-slate-900">
-            <div className="text-white text-lg mx-auto">
-              Sorry, this site is not support on mobile at the moment
-            </div>
+                <div className="flex h-4/5 w-full xl:w-8/12 border-[#785a28] border-x-2 border-t-2">
+                  <div className="flex flex-col justify-center bg-[#262d39] w-1/5">
+                    <XpButton />
+                    <RerollButton />
+                  </div>
+                  <div className="bg-[#152023] w-4/5">
+                    <Shop />
+                  </div>
+                  
+                </div>
+              </div>
+            
+          
+          </main>
+        </DndContext>
+      </BrowserView>
+      <MobileView>
+        <div className="flex flex-col w-screen content-center h-screen bg-slate-900">
+          <div className="text-white text-3xl mt-40 p-5 text-center">
+            Sorry, TFT Rolldown Simulator is not support on mobile at the moment.
           </div>
-        </MobileView>
-        </main>
-      </DndContext>
+        </div>
+      </MobileView>
     </GameContext.Provider>
     
   );
